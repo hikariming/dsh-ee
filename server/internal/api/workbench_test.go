@@ -161,7 +161,13 @@ func TestWorkbench(t *testing.T) {
 		} `json:"apps"`
 	}
 	_ = json.Unmarshal(raw, &cat)
-	if len(cat.Apps) != 1 || !strings.Contains(string(cat.Apps[0].Workbench), `"tool":"lookup"`) || !strings.Contains(string(cat.Apps[0].Workbench), `"crm-web"`) {
+	var crmWorkbench json.RawMessage
+	for _, app := range cat.Apps {
+		if app.Name == "crm-helper" {
+			crmWorkbench = app.Workbench
+		}
+	}
+	if crmWorkbench == nil || !strings.Contains(string(crmWorkbench), `"tool":"lookup"`) || !strings.Contains(string(crmWorkbench), `"crm-web"`) {
 		t.Fatalf("目录应原样带上工作台：%s", raw)
 	}
 	etag := header.Get("ETag")

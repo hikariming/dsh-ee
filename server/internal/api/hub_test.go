@@ -118,7 +118,12 @@ func (d dshClient) toolNames() []string {
 	r := d.rpc("tools/list", nil)
 	var out []string
 	for _, t := range r["result"].(map[string]any)["tools"].([]any) {
-		out = append(out, t.(map[string]any)["name"].(string))
+		name := t.(map[string]any)["name"].(string)
+		// workbench 系统应用会注册 home__* 工具；断言业务连接的测试忽略它们。
+		if strings.HasPrefix(name, "home__") {
+			continue
+		}
+		out = append(out, name)
 	}
 	slices.Sort(out)
 	return out
@@ -168,6 +173,21 @@ func (d dshClient) catalog() catalog {
 	}
 	var c catalog
 	_ = json.Unmarshal(body, &c)
+	// workbench 是系统应用，每个员工目录都会带上；断言“用户目录”的测试忽略它。
+	skills := c.Skills[:0]
+	for _, s := range c.Skills {
+		if s.Name != "workbench" {
+			skills = append(skills, s)
+		}
+	}
+	c.Skills = skills
+	apps := c.Apps[:0]
+	for _, a := range c.Apps {
+		if a.Name != "workbench" {
+			apps = append(apps, a)
+		}
+	}
+	c.Apps = apps
 	return c
 }
 

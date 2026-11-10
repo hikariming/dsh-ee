@@ -76,9 +76,11 @@ func TestDshAppSubscription(t *testing.T) {
 			t.Fatalf("available_apps 应是数组：%s", raw)
 		}
 		for _, e := range c.Apps {
-			apps = append(apps, e.Name)
-			if want := map[string]string{"always-on": "auto", "expense-pick": "optional"}[e.Name]; e.Delivery != want {
+			if want := map[string]string{"always-on": "auto", "expense-pick": "optional", "workbench": "auto"}[e.Name]; e.Delivery != want {
 				t.Fatalf("%s 的 delivery 应是 %s：%s", e.Name, want, raw)
+			}
+			if e.Name != "workbench" {
+				apps = append(apps, e.Name)
 			}
 		}
 		for _, e := range c.Available {
@@ -88,7 +90,9 @@ func TestDshAppSubscription(t *testing.T) {
 			}
 		}
 		for _, e := range c.Skills {
-			skills = append(skills, e.Name)
+			if e.Name != "workbench" {
+				skills = append(skills, e.Name)
+			}
 		}
 		return apps, available, skills, header.Get("ETag")
 	}
