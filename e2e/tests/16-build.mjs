@@ -40,7 +40,7 @@ export default async function (t) {
     await nav(page, { name: "新建应用" });
     await page.waitForURL(`${BASE}/build/new`);
     // 新建默认进「让 AI 帮我做」页签，手动表单在「手动配置」里
-    await page.getByRole("button", { name: "手动配置" }).click();
+    await page.getByRole("button", { name: "手动配置" }).first().click();
     await page.getByText("只有你自己用，保存后直接能在 DSH 里打开，不用审核。").waitFor();
     await page.getByLabel("标识").fill(mine);
     await page.getByLabel("标题").fill(`E2E 我的助手 ${tag}`);
