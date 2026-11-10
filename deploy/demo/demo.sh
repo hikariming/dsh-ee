@@ -37,6 +37,8 @@ load_env() {
 	TIDB_STATUS_PORT=${TIDB_STATUS_PORT:-10180}
 	TIDB_MEMORY_LIMIT=${TIDB_MEMORY_LIMIT:-1536MB}
 	CF_TUNNEL_CONFIG=${CF_TUNNEL_CONFIG:-}
+	DEMO_RESET_HOURS=${DEMO_RESET_HOURS:-6}
+	[[ $DEMO_RESET_HOURS =~ ^[1-9][0-9]*$ ]] || die "DEMO_RESET_HOURS 必须是正整数（小时）"
 	export DSH_EE_ADDR=127.0.0.1:$DEMO_PORT
 	export DSH_EE_DSN="root:@tcp(127.0.0.1:$TIDB_PORT)/dsh_ee"
 	export DSH_EE_DATA_DIR=$DEMO_HOME/data
@@ -73,11 +75,24 @@ CF_TUNNEL_CONFIG=
 
 # 给访客看的重置周期，和 crontab 保持一致
 DSH_EE_DEMO_RESET="每 6 小时"
+# 重置周期（小时），登录页倒计时用；和 crontab 的间隔保持一致
+DEMO_RESET_HOURS=6
 ENV
 	log "已生成 $ENV_FILE，检查一下 DSH_EE_BIN / TIDB_BIN / DSH_EE_PUBLIC_URL 再 $0 reset"
 }
 
 pid_alive() { [[ -f $RUN/$1.pid ]] && kill -0 "$(cat "$RUN/$1.pid")" 2>/dev/null; }
+
+# 下次重置时间：本地时间每 DEMO_RESET_HOURS 小时一次，与 crontab 的重置周期一致。
+# 输出 RFC3339（带时区），dsh-ee 在登录页据此显示倒计时。
+next_reset_at() {
+	local now anchor step next
+	now=$(date +%s)
+	anchor=$(date -d "$(date +%F) 00:00" +%s)
+	step=$((DEMO_RESET_HOURS * 3600))
+	next=$((anchor + ((now - anchor) / step + 1) * step))
+	date -d "@$next" --iso-8601=seconds
+}
 
 wait_port() {
 	local port=$1 i
@@ -112,6 +127,8 @@ start_dsh() {
 	if pid_alive dsh-ee; then log "dsh-ee 已在运行"; return; fi
 	[[ -x $DSH_EE_BIN ]] || die "找不到 $DSH_EE_BIN，先在仓库根目录 make build"
 	mkdir -p "$DSH_EE_DATA_DIR"
+	DSH_EE_DEMO_RESET_AT=$(next_reset_at)
+	export DSH_EE_DEMO_RESET_AT
 	nohup "$DSH_EE_BIN" < /dev/null >> "$LOGS/dsh-ee.log" 2>&1 9>&- &
 	echo $! > "$RUN/dsh-ee.pid"
 	local i

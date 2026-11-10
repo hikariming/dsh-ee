@@ -34,7 +34,8 @@ deploy/demo/demo.sh reset       # 第一次启动：建库、导入示例内容
 @reboot     /path/to/dsh-ee/deploy/demo/demo.sh start >> /home/you/dsh-ee-demo/logs/reset.log 2>&1
 ```
 
-改了重置周期，记得同步改 `demo.env` 里的 `DSH_EE_DEMO_RESET`（登录页上显示给访客看）。
+`demo.sh` 启动时会按 `demo.env` 里的 `DEMO_RESET_HOURS`（默认 6）算出下一次重置时间，登录页据此显示「距离下次重置还有多久（几点）」。
+改 crontab 的重置周期时，把 `DEMO_RESET_HOURS` 和显示文案 `DSH_EE_DEMO_RESET` 一起改。
 
 ## 对外访问
 

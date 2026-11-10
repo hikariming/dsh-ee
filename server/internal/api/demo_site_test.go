@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hikariming/dsh-ee/server/internal/api"
 	"github.com/hikariming/dsh-ee/server/internal/secret"
@@ -28,7 +29,7 @@ func TestDemoSite(t *testing.T) {
 	srv := api.New(st, box, api.Options{
 		DataDir:  t.TempDir(),
 		Addr:     ts.Listener.Addr().String(),
-		DemoSite: &api.DemoSite{Username: "admin", Password: "admin-password-123", Reset: "每 6 小时"},
+		DemoSite: &api.DemoSite{Username: "admin", Password: "admin-password-123", Reset: "每 6 小时", NextResetAt: time.Date(2026, 11, 11, 0, 0, 0, 0, time.FixedZone("CST", 8*3600))},
 	}, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	ts.Config.Handler = srv.Handler()
 	ts.Start()
@@ -38,10 +39,18 @@ func TestDemoSite(t *testing.T) {
 	code, body := anon.do("GET", "/api/auth/methods", nil, nil)
 	expect(t, "登录方式", code, 200, body)
 	demo := decodeAs[struct {
-		Demo *struct{ Username, Password, Reset string }
+		Demo *struct {
+			Username    string `json:"username"`
+			Password    string `json:"password"`
+			Reset       string `json:"reset"`
+			NextResetAt string `json:"next_reset_at"`
+		}
 	}](t, body).Demo
 	if demo == nil || demo.Username != "admin" || demo.Password != "admin-password-123" || demo.Reset != "每 6 小时" {
 		t.Fatalf("登录页应给出演示账号：%s", body)
+	}
+	if demo.NextResetAt != "2026-11-11T00:00:00+08:00" {
+		t.Fatalf("登录页应给出下次重置时间：%s", body)
 	}
 
 	admin := newClient(t, ts.URL)

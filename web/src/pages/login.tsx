@@ -15,9 +15,37 @@ function safeNext(raw: string | null) {
   return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/go";
 }
 
+/** 每 30 秒刷新一次当前时间，给演示站「下次重置」倒计时用。 */
+function useNow(intervalMs: number) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), intervalMs);
+    return () => window.clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
+
+/** 把剩余毫秒说成人话，例如「2 小时 15 分钟」/「2 hours 15 minutes」。 */
+function remainingLabel(ms: number, lang: string) {
+  const minutes = Math.max(1, Math.ceil(ms / 60000));
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  const fmt = (n: number, unit: "hour" | "minute") =>
+    new Intl.NumberFormat(lang, { style: "unit", unit, unitDisplay: "long" }).format(n);
+  if (hours > 0 && rest > 0) return `${fmt(hours, "hour")} ${fmt(rest, "minute")}`;
+  if (hours > 0) return fmt(hours, "hour");
+  return fmt(rest, "minute");
+}
+
+/** 只显示时钟（服务端给的是 RFC3339，会带上本地时区）。 */
+function clockLabel(date: Date, lang: string) {
+  return date.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
+}
+
 export default function Login() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, loading, error: bootError, login } = useAuth();
+  const now = useNow(30_000);
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const next = safeNext(params.get("next"));
@@ -29,6 +57,8 @@ export default function Login() {
   const ldap = !!methods.data?.ldap;
   const sso = methods.data?.oidc ?? null;
   const demo = methods.data?.demo ?? null;
+  const resetAt = demo?.next_reset_at ? new Date(demo.next_reset_at) : null;
+  const resetIn = resetAt && !Number.isNaN(resetAt.getTime()) ? resetAt.getTime() - now : null;
   // 企业统一登录失败时，回调把原因放在 oidc_error 里带回来
   const ssoError = params.get("oidc_error");
   // 从 DSH 自动登录的会话只带员工权限：带 reauth=1 进来时照常显示登录表单
@@ -74,6 +104,13 @@ export default function Login() {
             <p className="font-medium">{t("login.demo.title")}</p>
             <p className="mt-1 font-mono text-[13px]">{t("login.demo.account", { username: demo.username, password: demo.password })}</p>
             {demo.reset && <p className="mt-1">{t("login.demo.reset", { reset: demo.reset })}</p>}
+            {resetAt && resetIn !== null && (
+              <p className="mt-1">
+                {resetIn > 0
+                  ? t("login.demo.nextReset", { time: remainingLabel(resetIn, i18n.language), at: clockLabel(resetAt, i18n.language) })
+                  : t("login.demo.resetting")}
+              </p>
+            )}
             <Button
               type="button"
               size="sm"

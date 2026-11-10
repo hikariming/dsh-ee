@@ -16,6 +16,8 @@ export default {
       title: "这是公开的演示站",
       account: "用户名 {{username}} · 密码 {{password}}",
       reset: "数据{{reset}}重置一次，随便试。",
+      nextReset: "距离下次重置还有 {{time}}（{{at}}）",
+      resetting: "演示数据正在重置，请稍后再试。",
       fill: "填入演示账号",
     },
   },

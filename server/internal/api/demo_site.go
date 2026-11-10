@@ -21,6 +21,8 @@ type DemoSite struct {
 	Password string
 	// 给访客看的重置周期说明，如「每 6 小时」；空则不显示
 	Reset string
+	// 下一次重置时间；零值表示不显示倒计时
+	NextResetAt time.Time
 	// dsh-ee 自己监听的端口：对外请求只许连本机的这个端口（示例连接就是连自己）
 	selfPort string
 }
@@ -100,9 +102,10 @@ func (d *DemoSite) guard(t *http.Transport) *http.Transport {
 }
 
 type demoSiteInfo struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Reset    string `json:"reset,omitempty"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Reset       string `json:"reset,omitempty"`
+	NextResetAt string `json:"next_reset_at,omitempty"`
 }
 
 // demoSiteInfo 给登录页和页面顶部的提示条用；正常部署返回 nil。
@@ -111,5 +114,9 @@ func (s *Server) demoSiteInfo() *demoSiteInfo {
 	if d == nil {
 		return nil
 	}
-	return &demoSiteInfo{Username: d.Username, Password: d.Password, Reset: d.Reset}
+	info := &demoSiteInfo{Username: d.Username, Password: d.Password, Reset: d.Reset}
+	if !d.NextResetAt.IsZero() {
+		info.NextResetAt = d.NextResetAt.Format(time.RFC3339)
+	}
+	return info
 }

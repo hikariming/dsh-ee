@@ -18,6 +18,8 @@ export default {
       title: "This is a public demo",
       account: "Username {{username}} · Password {{password}}",
       reset: "Data is reset {{reset}}, so feel free to try anything.",
+      nextReset: "Next reset in {{time}} ({{at}})",
+      resetting: "Demo data is being reset; please try again in a moment.",
       fill: "Use demo account",
     },
   },

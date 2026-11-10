@@ -1,12 +1,15 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
+	"time"
 )
 
 // 演示站的对外请求只能连 dsh-ee 自己监听的端口；正常部署不受影响。
@@ -50,5 +53,28 @@ func TestDemoSiteBlockedRoutesExist(t *testing.T) {
 		if !have[p] {
 			t.Errorf("demoSiteBlocked 里的 %q 不在路由表里", p)
 		}
+	}
+}
+
+// 登录页倒计时：只有配置了下次重置时间才下发 next_reset_at；正常部署不出现。
+func TestDemoSiteInfoNextReset(t *testing.T) {
+	if info := (&Server{}).demoSiteInfo(); info != nil {
+		t.Fatalf("正常部署不应有演示站信息：%+v", info)
+	}
+	s := &Server{opts: Options{DemoSite: &DemoSite{Username: "u", Password: "p", Reset: "每 6 小时"}}}
+	body, err := json.Marshal(s.demoSiteInfo())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(body), "next_reset_at") {
+		t.Fatalf("未配置下次重置时间时不应下发 next_reset_at：%s", body)
+	}
+	s.opts.DemoSite.NextResetAt = time.Date(2026, 11, 11, 0, 0, 0, 0, time.FixedZone("CST", 8*3600))
+	body, err = json.Marshal(s.demoSiteInfo())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(body), `"next_reset_at":"2026-11-11T00:00:00+08:00"`) {
+		t.Fatalf("应下发下次重置时间：%s", body)
 	}
 }

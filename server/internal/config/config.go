@@ -43,6 +43,8 @@ type Config struct {
 	// 对外请求只许连本机。DemoReset 是给访客看的重置周期说明，如「每 6 小时」。
 	DemoMode  bool
 	DemoReset string
+	// 下一次数据重置时间（RFC3339）；设置后登录页显示倒计时，不设则不显示。
+	DemoResetAt time.Time
 }
 
 func Load() (*Config, error) {
@@ -98,6 +100,13 @@ func Load() (*Config, error) {
 		c.DemoMode = b
 	}
 	c.DemoReset = strings.TrimSpace(os.Getenv("DSH_EE_DEMO_RESET"))
+	if v := strings.TrimSpace(os.Getenv("DSH_EE_DEMO_RESET_AT")); v != "" {
+		t, err := time.Parse(time.RFC3339, v)
+		if err != nil {
+			return nil, errors.New("DSH_EE_DEMO_RESET_AT 必须是 RFC3339 时间，例如 2026-11-11T00:00:00+08:00")
+		}
+		c.DemoResetAt = t
+	}
 	if c.DemoMode && c.BootstrapAdminPassword == "" {
 		return nil, errors.New("DSH_EE_DEMO_MODE 需要同时设置 DSH_EE_BOOTSTRAP_ADMIN_PASSWORD：登录页要把演示账号显示出来")
 	}

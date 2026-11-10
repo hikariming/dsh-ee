@@ -38,6 +38,8 @@ export interface DemoSite {
   username: string;
   password: string;
   reset?: string;
+  /** 下一次数据重置时间（RFC3339）；不设则不显示倒计时。 */
+  next_reset_at?: string;
 }
 
 export interface Me extends User {
