@@ -30,6 +30,7 @@ import ext from "./ext";
 import signingKeys from "./signing-keys";
 import devdocs from "./devdocs";
 import embed from "./embed";
+import expertCenter from "./expert-center";
 
 export default {
   ...common,
@@ -62,4 +63,5 @@ export default {
   ...signingKeys,
   ...devdocs,
   ...embed,
+  ...expertCenter,
 } satisfies Messages<typeof zh>;

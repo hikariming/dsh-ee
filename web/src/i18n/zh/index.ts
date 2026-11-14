@@ -28,6 +28,7 @@ import ext from "./ext";
 import signingKeys from "./signing-keys";
 import devdocs from "./devdocs";
 import embed from "./embed";
+import expertCenter from "./expert-center";
 
 /** 中文文案（源语言）。按页面分模块，这里合并成一棵树。 */
 export default {
@@ -61,4 +62,5 @@ export default {
   ...signingKeys,
   ...devdocs,
   ...embed,
+  ...expertCenter,
 };
