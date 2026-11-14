@@ -138,6 +138,7 @@ export default {
     "admin-auth": "Sign-in",
     "admin-signing-keys": "Extension signing",
     "admin-expert-center": "Experts & connectors policy",
+    "admin-directory": "Enterprise directory",
     knowledge: "Knowledge Q&A",
   },
   pageDesc: {
@@ -175,6 +176,7 @@ export default {
     "admin-auth": "LDAP / AD and single sign-on (OIDC)",
     "admin-signing-keys": "Trusted public keys for extension signing: add, retire, revoke",
     "admin-expert-center": "Categories, featured items, block policies and per-person access lookup for experts, skills and connectors",
+    "admin-directory": "Registered enterprise directory: check / register the JSON, install and upgrade entries",
     knowledge: "Policies, handbooks and documents; ask in Knowledge Q&A in DSH",
   },
   menuGroups: {

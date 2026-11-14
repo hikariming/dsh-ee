@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/hikariming/dsh-ee/server/internal/kb"
+	"github.com/hikariming/dsh-ee/server/internal/lease"
 	"github.com/hikariming/dsh-ee/server/internal/oidc"
 	"github.com/hikariming/dsh-ee/server/internal/rbac"
 	"github.com/hikariming/dsh-ee/server/internal/registry"
@@ -110,6 +111,12 @@ type Options struct {
 	CSPInlineScriptHashes []string
 	// 企业目录（directory.go）：tarball 来源的主机白名单；空表示只接受公网 https 地址。
 	DirectoryTarballHosts []string
+	// API 客户端 client_credentials（clients.go）：每 IP 每分钟最多签发几次；0 表示关闭限流，
+	// 配置默认 120（DSH_EE_CLIENT_TOKEN_PER_MINUTE）。只防撞库，正常集成换 token 远低于这个量。
+	ClientTokenPerMinute int
+	// 多实例后台任务租约（internal/lease），由 cmd/dsh-ee 创建后传入，后台循环与清理任务共用。
+	// nil 表示不启用：每个实例都会执行周期任务（单实例与测试的原有行为）。
+	BackgroundLeases *lease.Runner
 	// 刷新令牌（docs/token-lifecycle.md §3）：默认关闭；关闭时 POST /api/auth/refresh 返回 404，
 	// 设备登录 / 手工签发也不会额外返回 refresh token。
 	RefreshTokens bool
@@ -132,11 +139,15 @@ type Server struct {
 	loginIPLimiter  *loginIPLimiter
 	deviceCodeRate  *ipRate
 	deviceTokenRate *ipRate
-	// 启动时间与登录计数，只给 /metrics 用
+	// client_credentials 的每 IP 限流；nil 表示关闭（见 clients.go）
+	clientTokenRate *ipRate
+	// 启动时间、登录计数与嵌入拒绝计数，只给 /metrics 用
 	startedAt            time.Time
 	loginFailures        atomic.Uint64
 	loginIPLimited       atomic.Uint64
 	loginUsernameLimited atomic.Uint64
+	// 被拒绝的嵌入请求数（embed.deny 审计）：进程内累计，重启清零、多实例各自独立
+	embedDenied atomic.Uint64
 	// 可信反向代理网段；只有这些对端的 X-Forwarded-* 会被采信（见 proxy.go）
 	trustedProxies []netip.Prefix
 	upstream       *http.Client
@@ -173,19 +184,17 @@ type Server struct {
 	releaseKick   chan struct{}
 	releaseMu     sync.Mutex
 	releaseJobs   map[string]bool
-	// 「开始使用」页的接入码
-	setupCodes setupCodes
 	// 全部路由；Agent 工具也从这里取处理函数
 	routeTable []route
 	// 由路由表生成的 Agent 工具
 	agentTools []*agentTool
+	// 后台周期任务的租约（多实例选主）；nil 时直接执行
+	leases *lease.Runner
 	// 知识库的内存关键词索引
 	kb kbIndex
-	// OIDC 登录：发现配置与公钥缓存、进行中的登录请求
+	// OIDC 登录：发现配置与公钥缓存（一次性 state/PKCE 在共享表 ephemeral_states 里）
 	oidcOnce   sync.Once
 	oidcClient *oidc.Client
-	oidcStates oidcStates
-	webLinks   webLinks
 }
 
 func New(st *store.Store, box *secret.Box, opts Options, log *slog.Logger) *Server {
@@ -225,11 +234,14 @@ func New(st *store.Store, box *secret.Box, opts Options, log *slog.Logger) *Serv
 			MaxIdleConnsPerHost:   32,
 		})}
 	}
-	s := &Server{store: st, box: box, opts: opts, log: log, limiter: newLoginLimiter(), deviceCodeRate: newIPRate(deviceCodePerMinute), deviceTokenRate: newIPRate(deviceTokenPerMinute), trustedProxies: opts.TrustedProxies, upstream: up, connectKick: make(chan struct{}, 1), elevationKick: make(chan struct{}, 1), streamsDone: make(chan struct{})}
+	s := &Server{store: st, box: box, opts: opts, log: log, leases: opts.BackgroundLeases, limiter: newLoginLimiter(), deviceCodeRate: newIPRate(deviceCodePerMinute), deviceTokenRate: newIPRate(deviceTokenPerMinute), trustedProxies: opts.TrustedProxies, upstream: up, connectKick: make(chan struct{}, 1), elevationKick: make(chan struct{}, 1), streamsDone: make(chan struct{})}
 	if opts.RateLimitPerMinute > 0 {
 		s.tokenRate = newTokenRate(opts.RateLimitPerMinute, opts.RateLimitWindow)
 	}
 	s.loginIPLimiter = newLoginIPLimiter(opts.LoginIPLimit, opts.LoginIPWindow)
+	if opts.ClientTokenPerMinute > 0 {
+		s.clientTokenRate = newIPRate(opts.ClientTokenPerMinute)
+	}
 	s.startedAt = time.Now()
 	s.kb.ix = kb.NewIndex()
 	s.extEndpointRate.limit = extEndpointPerMinute
@@ -365,6 +377,28 @@ func writeErr(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, apiError{Error: msg})
 }
 
+// httpProblem 是带状态码和给人看的信息的失败：处理函数内部把校验失败返回给外层统一写回，
+// 免得每个步骤都自己 writeErr。实现函数见 writeProblem。
+type httpProblem struct {
+	status int
+	msg    string
+}
+
+func (e *httpProblem) Error() string { return e.msg }
+
+// statusErr 造一个带状态码的失败。
+func statusErr(status int, msg string) error { return &httpProblem{status: status, msg: msg} }
+
+// writeProblem 把处理函数返回的失败写回：带状态码的按状态码，其余按 500。
+func (s *Server) writeProblem(w http.ResponseWriter, r *http.Request, err error) {
+	var p *httpProblem
+	if errors.As(err, &p) {
+		writeErr(w, p.status, p.msg)
+		return
+	}
+	s.internalErr(w, r, err)
+}
+
 func (s *Server) internalErr(w http.ResponseWriter, r *http.Request, err error) {
 	// 客户端刷新或切页会取消请求上下文，这时写库/读库报 context canceled 是正常现象，
 	// 既不是服务端故障，也没有可写的响应，别在日志里刷 500。
@@ -495,12 +529,14 @@ func (s *Server) RunBackground(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-t.C:
-			j, err := s.registry.CheckUpdates(ctx, 0)
-			if err != nil {
-				s.log.Warn("检查上游新版本失败", "err", err)
-			} else if j != nil {
-				s.log.Info("发现上游新版本，已开始同步", "job", j.ID, "count", j.Total)
-			}
+			s.runLeased(ctx, leaseRegistryCheckUpdate, func(ctx context.Context) {
+				j, err := s.registry.CheckUpdates(ctx, 0)
+				if err != nil {
+					s.log.Warn("检查上游新版本失败", "err", err)
+				} else if j != nil {
+					s.log.Info("发现上游新版本，已开始同步", "job", j.ID, "count", j.Total)
+				}
+			})
 			t.Reset(6 * time.Hour)
 		}
 	}

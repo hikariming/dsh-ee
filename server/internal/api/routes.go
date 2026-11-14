@@ -116,6 +116,9 @@ func (s *Server) routes() []route {
 		pub("POST /api/auth/login", s.handleLogin),
 		// 令牌自省：Bearer 自身（第三方 Harness/SDK）或管理员网页会话查任意令牌
 		pub("POST /api/auth/introspect", s.handleIntrospect),
+		// API 客户端 client_credentials（docs/token-lifecycle.md）：第三方 Harness / CI 用自己的
+		// client_id + client_secret 换 access token，不需要把管理员令牌交给对方。
+		pub("POST /api/auth/client-token", s.handleClientToken),
 		// 刷新令牌（docs/token-lifecycle.md §3）：默认关闭，关闭时处理函数返回 404。
 		// 凭据在请求体里（refresh token），不需要 Bearer。
 		pub("POST /api/auth/refresh", s.handleRefreshToken),
@@ -211,10 +214,17 @@ func (s *Server) routes() []route {
 		// 供 CI / 机器人等无人值守场景续发 ee_at_（docs/token-lifecycle.md §6）。
 		prmt("POST /api/admin/tokens", s.handleIssueToken),
 		usr("POST /api/admin/tokens/revoke", s.handleRevokeTokens),
+		// API 客户端注册（docs/token-lifecycle.md）：管理员用网页会话（keys.manage）创建 / 查看 / 注销；
+		// 换 token 走公开的 POST /api/auth/client-token，凭据只在创建响应里显示一次。
+		prm("GET /api/admin/clients", s.handleListAPIClients, rbac.KeysManage),
+		prm("POST /api/admin/clients", s.handleCreateAPIClient, rbac.KeysManage),
+		prm("DELETE /api/admin/clients/{client_id}", s.handleDisableAPIClient, rbac.KeysManage),
 
 		// 系统设置：登录即可读（前端要用组织名、作用域、评分开关），按段落校验写权限
 		usr("GET /api/settings", s.handleGetSettings),
 		prm("GET /api/admin/embed-settings", s.handleAdminEmbedSettings, rbac.SettingsManage),
+		// 嵌入运行概览（embed_stats.go）：只聚合数量，给设置页的运行概览卡片用
+		prm("GET /api/admin/embed/stats", s.handleAdminEmbedStats, rbac.SettingsManage),
 		prm("PUT /api/admin/settings", s.handlePutSettings, rbac.SettingsManage, rbac.RegistryManage, rbac.UpstreamManage),
 
 		// LDAP / AD 登录：配置里有服务账号，单独存、单独授权
@@ -273,9 +283,14 @@ func (s *Server) routes() []route {
 		prm("POST /api/admin/signing-keys/{key_id}/retire", s.handleRetireSigningKey, rbac.ConnectionsManage, rbac.SettingsManage),
 		prm("POST /api/admin/signing-keys/{key_id}/revoke", s.handleRevokeSigningKey, rbac.ConnectionsManage, rbac.SettingsManage),
 		// 企业目录 v1（directory.go）：验签 + 逐条校验后登记来源，只登记不安装
-		prm("GET /api/admin/directory", s.handleListDirectory, rbac.ConnectionsManage, rbac.SettingsManage),
+		prm("GET /api/admin/directory", s.handleListDirectory, rbac.ConnectionsManage, rbac.SettingsManage, rbac.PluginsManage),
 		prm("POST /api/admin/directory/check", s.handleDirectoryCheck, rbac.ConnectionsManage, rbac.SettingsManage),
 		prm("POST /api/admin/directory/apply", s.handleDirectoryApply, rbac.ConnectionsManage, rbac.SettingsManage),
+		// 目录条目的安装 / 升级（directory_install.go）：只对已登记条目、管理员明确触发；
+		// 权限按条目类型在处理器里校验（扩展 connections.manage、插件 plugins.manage），
+		// 所以这里只要求登录，不能用一个静态权限点放宽另一类。
+		usr("POST /api/admin/directory/entries/{id}/install", s.handleDirectoryEntryInstall),
+		usr("POST /api/admin/directory/entries/{id}/upgrade", s.handleDirectoryEntryUpgrade),
 		prm("GET /api/admin/fields", s.handleListFields, rbac.FieldsManage, rbac.UsersView),
 		prm("POST /api/admin/fields", s.handleCreateField, rbac.FieldsManage),
 		prm("PATCH /api/admin/fields/{id}", s.handlePatchField, rbac.FieldsManage),

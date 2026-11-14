@@ -137,6 +137,7 @@ export default {
     "admin-auth": "登录方式",
     "admin-signing-keys": "扩展签名",
     "admin-expert-center": "专家与连接器策略",
+    "admin-directory": "企业插件目录",
     knowledge: "知识问答",
   },
   pageDesc: {
@@ -174,6 +175,7 @@ export default {
     "admin-auth": "LDAP / AD 与企业统一登录（OIDC）",
     "admin-signing-keys": "扩展签名的受信任公钥：新增、换下、撤销",
     "admin-expert-center": "专家 · 技能 · 连接器的分类、精选、禁用策略与权限查询",
+    "admin-directory": "登记过的企业目录：校验 / 登记目录 JSON，按条目安装、升级扩展与插件",
     knowledge: "制度、手册与资料；在 DSH 的「知识问答」里提问",
   },
   /** 默认菜单分组名。 */
