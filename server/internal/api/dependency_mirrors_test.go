@@ -152,6 +152,8 @@ func TestDependencyMirrorsSettingsAndCatalog(t *testing.T) {
 
 func TestDependencyMirrorsRegistryManage(t *testing.T) {
 	f := newEmbedFixture(t, nil)
+	code, body := f.admin.do("PUT", "/api/admin/settings", map[string]any{"embed": map[string]any{"allowedOrigins": []string{"https://embed.corp"}}}, nil)
+	expect(t, "configure embed", code, 200, body)
 	for _, permission := range []string{"registry.manage", "upstream.manage"} {
 		code, body := f.admin.do("POST", "/api/admin/roles", map[string]any{"code": permission, "name": permission, "permissions": []string{permission}}, nil)
 		expect(t, "create role", code, 201, body)
@@ -161,6 +163,16 @@ func TestDependencyMirrorsRegistryManage(t *testing.T) {
 		admin := newClient(t, f.ts.URL)
 		code, body = admin.do("POST", "/api/auth/login", map[string]string{"username": permission, "password": "mirror-admin-password-1"}, nil)
 		expect(t, "login", code, 200, body)
+		if permission == "registry.manage" {
+			code, body = admin.do("GET", "/api/settings", nil, nil)
+			expect(t, "redacted settings", code, 200, body)
+			redacted := decodeAs[store.AppSettings](t, body)
+			if len(redacted.Embed.AllowedOrigins) != 0 {
+				t.Fatal("embed settings not redacted")
+			}
+			code, body = admin.do("PUT", "/api/admin/settings", redacted, nil)
+			expect(t, "full redacted settings cannot overwrite embed", code, 403, body)
+		}
 		code, body = admin.do("PUT", "/api/admin/settings", map[string]any{"mirrors": map[string]any{"pypi": map[string]any{"url": "https://mirror.corp/" + permission, "username": "reader", "secret": "mirror-password"}}}, nil)
 		want := 403
 		if permission == "registry.manage" {
@@ -169,5 +181,12 @@ func TestDependencyMirrorsRegistryManage(t *testing.T) {
 		expect(t, "mirror permission", code, want, body)
 		code, body = admin.do("PUT", "/api/admin/settings", map[string]any{"orgName": permission}, nil)
 		expect(t, "unrelated settings remain protected", code, 403, body)
+	}
+	stored, err := f.st.GetSettings(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(stored.Embed.AllowedOrigins) != 1 || stored.Embed.AllowedOrigins[0] != "https://embed.corp" {
+		t.Fatal("partial save changed embed configuration")
 	}
 }

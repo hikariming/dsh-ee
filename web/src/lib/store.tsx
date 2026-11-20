@@ -166,7 +166,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     plugins,
     saveMirrors: async (mirrors) => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
-      const saved = await api.saveSettings({ ...latest.current, mirrors });
+      const saved = await api.saveSettings({ mirrors });
       setSettings((current) => ({ ...current, mirrors: saved.mirrors }));
     },
     pluginsLoading,
