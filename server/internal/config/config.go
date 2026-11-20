@@ -535,21 +535,29 @@ func LoadOrCreateKeyFile(path string) (key []byte, created bool, err error) {
 	if _, err := rand.Read(key); err != nil {
 		return nil, false, err
 	}
-	// O_EXCL：多个实例同时首次启动时只有一个写成功，其余读它写好的那把。
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
-	if errors.Is(err, os.ErrExist) {
-		return LoadOrCreateKeyFile(path)
-	}
+	// 先写临时文件再硬链接到目标：目标文件一出现就是完整的；多个实例同时首次启动时只有一个链接成功，其余读它那把。
+	tmp, err := os.CreateTemp(filepath.Dir(path), SecretKeyFileName+".tmp-*")
 	if err != nil {
 		return nil, false, err
 	}
-	_, werr := f.WriteString(base64.StdEncoding.EncodeToString(key) + "\n")
-	if cerr := f.Close(); werr == nil {
+	defer os.Remove(tmp.Name())
+	_, werr := tmp.WriteString(base64.StdEncoding.EncodeToString(key) + "\n")
+	if werr == nil {
+		werr = tmp.Sync()
+	}
+	if cerr := tmp.Close(); werr == nil {
 		werr = cerr
 	}
+	if werr == nil {
+		werr = os.Chmod(tmp.Name(), 0o600)
+	}
 	if werr != nil {
-		_ = os.Remove(path)
 		return nil, false, werr
+	}
+	if err := os.Link(tmp.Name(), path); errors.Is(err, os.ErrExist) {
+		return LoadOrCreateKeyFile(path)
+	} else if err != nil {
+		return nil, false, err
 	}
 	return key, true, nil
 }
