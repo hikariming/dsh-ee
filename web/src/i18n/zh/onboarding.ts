@@ -13,6 +13,9 @@ export default {
       provider: {
         title: "模型供应商",
         hint: "接入一个模型供应商，需要上游 API key",
+        hints: {
+          unhealthy: "重新检测供应商；API key 有问题要在「模型接入」里改",
+        },
         detail: {
           enabled: "{{enabled}} 个启用的供应商",
           unhealthy: "{{enabled}} 个启用的供应商，其中 {{unhealthy}} 个最近检测不通",
@@ -25,6 +28,9 @@ export default {
       default_model: {
         title: "默认模型",
         hint: "选一个已上架的模型作为员工的默认模型",
+        hints: {
+          not_listed: "把默认模型改成已上架的模型",
+        },
         detail: {
           not_listed: "默认模型 {{model}} 不在已上架的模型里",
         },
@@ -65,6 +71,9 @@ export default {
       connect: {
         title: "DSH 接入插件",
         hint: "发布员工用的 DSH 接入插件；改过访问地址或默认模型后要重新发布",
+        hints: {
+          disabled: "先在设置里重新打开 DSH 接入，再发布",
+        },
         detail: {
           disabled: "DSH 接入已被关闭",
           unpublished: "还没有发布",

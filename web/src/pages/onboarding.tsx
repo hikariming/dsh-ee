@@ -14,7 +14,9 @@ const stepDetail = (step: SetupStep) => (step.detail_key && stepText(step, `deta
 const stepDesc = (step: SetupStep, demoDesc: string) => {
   if (step.id === "demo" && !step.done) return demoDesc;
   if (step.done) return stepDetail(step);
-  return [stepDetail(step), stepText(step, "hint") ?? step.how].filter(Boolean).join(" ");
+  // 同一步在不同状态下下一步不同（比如供应商检测不通要重测而不是新建），按 detail_key 取对应提示
+  const hint = (step.detail_key && stepText(step, `hints.${step.detail_key}`)) || stepText(step, "hint") || step.how;
+  return [stepDetail(step), hint].filter(Boolean).join(" ");
 };
 import type { Settings } from "../lib/types";
 import { useAction, useApi } from "../lib/use-api";

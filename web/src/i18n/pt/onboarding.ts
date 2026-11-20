@@ -17,6 +17,9 @@ export default {
       provider: {
         title: "Fornecedor de modelos",
         hint: "Conecte um fornecedor de modelos. É preciso uma chave de API do fornecedor.",
+        hints: {
+          unhealthy: "Verifique o fornecedor de novo; se a chave de API estiver errada, corrija em Acesso a modelos.",
+        },
         detail: {
           enabled: "{{enabled}} fornecedor(es) ativo(s)",
           unhealthy: "{{enabled}} fornecedor(es) ativo(s), {{unhealthy}} falhando nas últimas verificações",
@@ -29,6 +32,9 @@ export default {
       default_model: {
         title: "Modelo padrão",
         hint: "Escolha um dos modelos publicados como padrão dos funcionários.",
+        hints: {
+          not_listed: "Troque o padrão por um dos modelos publicados.",
+        },
         detail: {
           not_listed: "O modelo padrão {{model}} não está entre os modelos publicados",
         },
@@ -69,6 +75,9 @@ export default {
       connect: {
         title: "Plugin de conexão DSH",
         hint: "Publique o plugin de conexão DSH para os funcionários. Publique de novo depois de mudar a URL de acesso ou o modelo padrão.",
+        hints: {
+          disabled: "Reative a conexão DSH nas configurações e depois publique.",
+        },
         detail: {
           disabled: "A conexão DSH está desativada",
           unpublished: "Ainda não publicado",

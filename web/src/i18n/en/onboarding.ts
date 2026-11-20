@@ -16,6 +16,9 @@ export default {
       provider: {
         title: "Model provider",
         hint: "Connect a model provider. You need an upstream API key.",
+        hints: {
+          unhealthy: "Re-check the provider; if its API key is wrong, fix it under Model access.",
+        },
         detail: {
           enabled: "{{enabled}} enabled provider(s)",
           unhealthy: "{{enabled}} enabled provider(s), {{unhealthy}} failing recent checks",
@@ -28,6 +31,9 @@ export default {
       default_model: {
         title: "Default model",
         hint: "Pick one of the listed models as the employees' default.",
+        hints: {
+          not_listed: "Change the default to one of the listed models.",
+        },
         detail: {
           not_listed: "Default model {{model}} is not among the listed models",
         },
@@ -68,6 +74,9 @@ export default {
       connect: {
         title: "DSH connect plugin",
         hint: "Publish the DSH connect plugin for employees. Republish after changing the access URL or default model.",
+        hints: {
+          disabled: "Turn DSH connect back on in settings, then publish.",
+        },
         detail: {
           disabled: "DSH connect is turned off",
           unpublished: "Not published yet",

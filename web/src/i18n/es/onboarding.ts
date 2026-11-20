@@ -17,6 +17,9 @@ export default {
       "provider": {
         "title": "Proveedor de modelos",
         "hint": "Conecta un proveedor de modelos. Necesitas una clave de API del proveedor.",
+        "hints": {
+          "unhealthy": "Vuelve a comprobar el proveedor; si la clave de API es incorrecta, corrígela en Acceso a modelos.",
+        },
         "detail": {
           "enabled": "{{enabled}} proveedor(es) activo(s)",
           "unhealthy": "{{enabled}} proveedor(es) activo(s), {{unhealthy}} con fallos en las últimas comprobaciones",
@@ -29,6 +32,9 @@ export default {
       "default_model": {
         "title": "Modelo predeterminado",
         "hint": "Elige uno de los modelos publicados como predeterminado para los empleados.",
+        "hints": {
+          "not_listed": "Cambia el predeterminado a uno de los modelos publicados.",
+        },
         "detail": {
           "not_listed": "El modelo predeterminado {{model}} no está entre los modelos publicados",
         },
@@ -69,6 +75,9 @@ export default {
       "connect": {
         "title": "Plugin de conexión DSH",
         "hint": "Publica el plugin de conexión DSH para los empleados. Vuelve a publicarlo tras cambiar la URL de acceso o el modelo predeterminado.",
+        "hints": {
+          "disabled": "Vuelve a activar la conexión DSH en la configuración y luego publica.",
+        },
         "detail": {
           "disabled": "La conexión DSH está desactivada",
           "unpublished": "Aún no publicado",
