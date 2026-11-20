@@ -194,13 +194,14 @@ function UpstreamForm() {
   const [draft, setDraft] = useState(settings.upstream);
   const [secret, setSecret] = useState("");
   const { busy, run } = useAction();
-  useEffect(() => { setDraft(settings.upstream); }, [settings.upstream]);
+  const [dirty, setDirty] = useState(false);
+  useEffect(() => { if (!dirty) setDraft(settings.upstream); }, [settings.upstream, dirty]);
   const kind = draft.repoKind || "npm";
   const auth = draft.auth;
   const offline = settings.upstream.mode === "offline";
   const custom = draft.registry === "custom";
   const changed = secret !== "" || JSON.stringify(draft) !== JSON.stringify(settings.upstream);
-  const patch = (value: Partial<Settings["upstream"]>) => setDraft((d) => ({ ...d, ...value }));
+  const patch = (value: Partial<Settings["upstream"]>) => { setDirty(true); setDraft((d) => ({ ...d, ...value })); };
   const needsSecret = custom && auth.type !== "none";
   const invalid = custom && (!draft.customRegistry.trim() || (needsSecret && !secret && !auth.hasSecret) || (auth.type === "basic" && !auth.username.trim()));
 
@@ -210,6 +211,7 @@ function UpstreamForm() {
       const r = await run(() => saveUpstream({ ...settings.upstream, registry: draft.registry, customRegistry: draft.customRegistry, repoKind: draft.repoKind, auth: { ...auth, secret } }));
       if (!r.ok) return notify(r.error);
       setSecret("");
+      setDirty(false);
       notify(t("registryAdmin.upstreamSaved"));
     }}>
       <fieldset disabled={offline || busy} className="space-y-5 disabled:opacity-60">
@@ -240,7 +242,7 @@ function UpstreamForm() {
             <input className={inputCls} autoComplete="off" required value={auth.username} onChange={(e) => patch({ auth: { ...auth, username: e.target.value } })} />
           </Field>}
           {needsSecret && <Field label={auth.type === "basic" ? t("registryAdmin.authPassword") : t("registryAdmin.authToken")} hint={t("registryAdmin.secretHint")}>
-            <input aria-label={auth.type === "basic" ? t("registryAdmin.authPassword") : t("registryAdmin.authToken")} className={inputCls} type="password" autoComplete="new-password" value={secret} placeholder={auth.hasSecret ? t("registryAdmin.secretSaved") : t("registryAdmin.secretRequired")} onChange={(e) => setSecret(e.target.value)} />
+            <input aria-label={auth.type === "basic" ? t("registryAdmin.authPassword") : t("registryAdmin.authToken")} className={inputCls} type="password" autoComplete="new-password" value={secret} placeholder={auth.hasSecret ? t("registryAdmin.secretSaved") : t("registryAdmin.secretRequired")} onChange={(e) => { setDirty(true); setSecret(e.target.value); }} />
           </Field>}
         </>}
         <Button type="submit" disabled={!changed || invalid}>{busy ? t("registryAdmin.upstreamSaving") : t("registryAdmin.saveUpstream")}</Button>
