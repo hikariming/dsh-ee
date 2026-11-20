@@ -107,7 +107,8 @@ func (s *Server) handleInitAdmin(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, "用户名只能用小写字母、数字和 . _ -，2 到 64 个字符")
 		return
 	}
-	u, err := createSuperAdmin(r.Context(), s.store, username, req.Password)
+	// 不跟随请求取消：建用户与授角色不在一个事务里，中途断开会留下没有角色的第一个用户，网页初始化也随之关闭。
+	u, err := createSuperAdmin(context.WithoutCancel(r.Context()), s.store, username, req.Password)
 	if err != nil {
 		if ve, ok := err.(validationError); ok {
 			writeErr(w, http.StatusBadRequest, string(ve))
