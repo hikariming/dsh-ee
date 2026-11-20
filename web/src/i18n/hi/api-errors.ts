@@ -7,7 +7,7 @@ export default {
     base_url_invalid: "बेस URL एक http(s) पता होना चाहिए, जैसे https://api.deepseek.com",
     name_key_required: "नाम (अधिकतम 64 अक्षर) और API key ज़रूरी हैं।",
     vendor_invalid: "वेंडर में केवल छोटे अक्षर, अंक और - हो सकते हैं।",
-    model_invalid: "अमान्य मॉडल नाम: {{model}}",
+    model_invalid: "अमान्य मॉडल नाम ({{model}})।",
     name_exists: "यह नाम पहले से मौजूद है।",
   },
   auth: {

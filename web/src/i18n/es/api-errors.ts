@@ -7,7 +7,7 @@ export default {
     base_url_invalid: "La URL base debe ser una dirección http(s), p. ej. https://api.deepseek.com",
     name_key_required: "El nombre (hasta 64 caracteres) y la clave de API son obligatorios.",
     vendor_invalid: "El proveedor solo admite minúsculas, dígitos y -.",
-    model_invalid: "Nombre de modelo no válido: {{model}}",
+    model_invalid: "Nombre de modelo no válido ({{model}}).",
     name_exists: "Ese nombre ya existe.",
   },
   auth: {
