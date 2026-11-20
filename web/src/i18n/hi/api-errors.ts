@@ -3,6 +3,13 @@ import type { Messages } from "../types";
 
 /** 老 /api/* 错误码的英文文案；键路径与 server/internal/api/errcodes.go 的 code 原文一一对应。 */
 export default {
+  llm: {
+    base_url_invalid: "बेस URL एक http(s) पता होना चाहिए, जैसे https://api.deepseek.com",
+    name_key_required: "नाम (अधिकतम 64 अक्षर) और API key ज़रूरी हैं।",
+    vendor_invalid: "वेंडर में केवल छोटे अक्षर, अंक और - हो सकते हैं।",
+    model_invalid: "अमान्य मॉडल नाम: {{model}}",
+    name_exists: "यह नाम पहले से मौजूद है।",
+  },
   auth: {
     init_done: "सेटअप पहले ही हो चुका है। कृपया साइन इन करें।",
     init_locked: "बहुत बार गलत सेटअप कोड; यह कोड रद्द हो गया। सर्वर रीस्टार्ट करें और लॉग से नया कोड लें।",

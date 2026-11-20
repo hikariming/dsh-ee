@@ -59,6 +59,19 @@ const (
 	// codeAuthBadUsername：用户名格式不对，400。params 无。
 	codeAuthBadUsername = "auth.bad_username"
 
+	// ---- 模型上游：server/internal/api/llm.go（首次配置向导会用到） ----
+
+	// codeLLMBaseURLInvalid：base_url 不是 http(s) 地址，400。params 无。
+	codeLLMBaseURLInvalid = "llm.base_url_invalid"
+	// codeLLMNameKeyRequired：name 为空或过长、api_key 为空，400。params 无。
+	codeLLMNameKeyRequired = "llm.name_key_required"
+	// codeLLMVendorInvalid：vendor 含非法字符，400。params 无。
+	codeLLMVendorInvalid = "llm.vendor_invalid"
+	// codeLLMModelInvalid：模型名不合法，400。params：model。
+	codeLLMModelInvalid = "llm.model_invalid"
+	// codeLLMNameExists：上游名称已存在，409。params 无。
+	codeLLMNameExists = "llm.name_exists"
+
 	// ---- 登录限流：server/internal/api/auth.go、login_ratelimit.go ----
 
 	// codeAuthTooManyAttempts：同一用户名连续失败达到上限后被锁定，429。params：minutes（锁定分钟数）。

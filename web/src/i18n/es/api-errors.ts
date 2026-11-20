@@ -3,6 +3,13 @@ import type { Messages } from "../types";
 
 /** 老 /api/* 错误码的英文文案；键路径与 server/internal/api/errcodes.go 的 code 原文一一对应。 */
 export default {
+  llm: {
+    base_url_invalid: "La URL base debe ser una dirección http(s), p. ej. https://api.deepseek.com",
+    name_key_required: "El nombre (hasta 64 caracteres) y la clave de API son obligatorios.",
+    vendor_invalid: "El proveedor solo admite minúsculas, dígitos y -.",
+    model_invalid: "Nombre de modelo no válido: {{model}}",
+    name_exists: "Ese nombre ya existe.",
+  },
   auth: {
     init_done: "La configuración ya está hecha. Inicia sesión.",
     init_locked: "Demasiados códigos incorrectos; este código ya no es válido. Reinicia el servidor y usa el nuevo código de su registro.",

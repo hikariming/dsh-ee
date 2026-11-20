@@ -3,6 +3,13 @@ import type zhNs from "../zh/api-errors";
 import type { Messages } from "../types";
 
 export default {
+  llm: {
+    base_url_invalid: "A URL base deve ser um endereço http(s), por exemplo https://api.deepseek.com",
+    name_key_required: "Nome (até 64 caracteres) e chave de API são obrigatórios.",
+    vendor_invalid: "O fornecedor só aceita minúsculas, dígitos e -.",
+    model_invalid: "Nome de modelo inválido: {{model}}",
+    name_exists: "Esse nome já existe.",
+  },
   auth: {
     init_done: "A configuração já foi feita. Entre normalmente.",
     init_locked: "Códigos errados demais; este código foi invalidado. Reinicie o servidor e use o novo código do log.",
