@@ -107,7 +107,7 @@ func ValidateStoredSettings(ctx context.Context, st *store.Store) error {
 // 每一段设置由哪个权限点管：npm 源页面能改路由与上游，系统设置页能改全部。
 func sectionPerms(field string) []string {
 	switch field {
-	case "Scope", "Registry":
+	case "Scope", "Registry", "Mirrors":
 		return []string{rbac.SettingsManage, rbac.RegistryManage}
 	case "Upstream":
 		return []string{rbac.SettingsManage, rbac.RegistryManage, rbac.UpstreamManage}

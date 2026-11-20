@@ -149,3 +149,25 @@ func TestDependencyMirrorsSettingsAndCatalog(t *testing.T) {
 		}
 	}
 }
+
+func TestDependencyMirrorsRegistryManage(t *testing.T) {
+	f := newEmbedFixture(t, nil)
+	for _, permission := range []string{"registry.manage", "upstream.manage"} {
+		code, body := f.admin.do("POST", "/api/admin/roles", map[string]any{"code": permission, "name": permission, "permissions": []string{permission}}, nil)
+		expect(t, "create role", code, 201, body)
+		role := decodeAs[struct{ ID int64 }](t, body)
+		code, body = f.admin.do("POST", "/api/admin/users", map[string]any{"username": permission, "password": "mirror-admin-password-1", "role_ids": []int64{role.ID}}, nil)
+		expect(t, "create admin", code, 201, body)
+		admin := newClient(t, f.ts.URL)
+		code, body = admin.do("POST", "/api/auth/login", map[string]string{"username": permission, "password": "mirror-admin-password-1"}, nil)
+		expect(t, "login", code, 200, body)
+		code, body = admin.do("PUT", "/api/admin/settings", map[string]any{"mirrors": map[string]any{"pypi": map[string]any{"url": "https://mirror.corp/" + permission, "username": "reader", "secret": "mirror-password"}}}, nil)
+		want := 403
+		if permission == "registry.manage" {
+			want = 200
+		}
+		expect(t, "mirror permission", code, want, body)
+		code, body = admin.do("PUT", "/api/admin/settings", map[string]any{"orgName": permission}, nil)
+		expect(t, "unrelated settings remain protected", code, 403, body)
+	}
+}

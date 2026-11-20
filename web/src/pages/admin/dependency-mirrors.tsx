@@ -4,6 +4,7 @@ import { Button, Card, Field, inputCls } from "../../components/ui";
 import { useStore } from "../../lib/store";
 import { useAction } from "../../lib/use-api";
 import type { Settings } from "../../lib/types";
+import { useAuth } from "../../lib/auth";
 
 const endpoints = {
   pypi: "https://nexus.corp/repository/pypi-group/simple",
@@ -13,6 +14,8 @@ const endpoints = {
 export default function DependencyMirrorsCard() {
   const { t } = useTranslation();
   const { settings, saveMirrors, notify } = useStore();
+  const { can } = useAuth();
+  const editable = can("settings.manage", "registry.manage");
   const [draft, setDraft] = useState(settings.mirrors);
   const [dirty, setDirty] = useState(false);
   const [secrets, setSecrets] = useState({ pypi: "", maven: "" });
@@ -31,6 +34,7 @@ export default function DependencyMirrorsCard() {
       <p className="mt-2 text-sm text-neutral-600">{t("dependencyMirrors.warning")}</p>
       <form className="mt-4" onSubmit={async (event) => {
         event.preventDefault();
+        if (!editable) return;
         const result = await run(() => saveMirrors({
           pypi: { ...draft.pypi, secret: secrets.pypi },
           maven: { ...draft.maven, secret: secrets.maven },
@@ -40,7 +44,7 @@ export default function DependencyMirrorsCard() {
         setDirty(false);
         notify(t("dependencyMirrors.saved"));
       }}>
-        <fieldset disabled={busy} className="space-y-4 disabled:opacity-60">
+        <fieldset disabled={busy || !editable} className="space-y-4 disabled:opacity-60">
           <div className="grid gap-5 lg:grid-cols-2">
             {(Object.keys(endpoints) as (keyof typeof endpoints)[]).map((kind) => (
               <section key={kind} className="space-y-3">
