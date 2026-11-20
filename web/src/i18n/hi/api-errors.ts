@@ -4,6 +4,10 @@ import type { Messages } from "../types";
 /** 老 /api/* 错误码的英文文案；键路径与 server/internal/api/errcodes.go 的 code 原文一一对应。 */
 export default {
   auth: {
+    init_done: "सेटअप पहले ही हो चुका है। कृपया साइन इन करें।",
+    init_locked: "बहुत बार गलत सेटअप कोड; यह कोड रद्द हो गया। सर्वर रीस्टार्ट करें और लॉग से नया कोड लें।",
+    init_bad_code: "गलत सेटअप कोड। सर्वर लॉग देखें।",
+    bad_username: "यूज़रनेम में केवल छोटे अक्षर, अंक और . _ - हों, 2 से 64 अक्षर।",
     login_required: "Please sign in first.",
     session_expired: "Your session has expired. Please sign in again.",
     bad_credentials: "Incorrect username or password.",

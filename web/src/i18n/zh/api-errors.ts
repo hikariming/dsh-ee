@@ -11,6 +11,10 @@
  */
 export default {
   auth: {
+    init_done: "已经初始化过了，请直接登录",
+    init_locked: "初始化码错误次数过多，已作废；请重启服务，从日志里拿新的初始化码",
+    init_bad_code: "初始化码不对，请到服务端日志里查看",
+    bad_username: "用户名只能用小写字母、数字和 . _ -，2 到 64 个字符",
     login_required: "请先登录",
     session_expired: "登录已过期，请重新登录",
     bad_credentials: "用户名或密码错误",

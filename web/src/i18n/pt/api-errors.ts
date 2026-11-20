@@ -4,6 +4,10 @@ import type { Messages } from "../types";
 
 export default {
   auth: {
+    init_done: "A configuração já foi feita. Entre normalmente.",
+    init_locked: "Códigos errados demais; este código foi invalidado. Reinicie o servidor e use o novo código do log.",
+    init_bad_code: "Código de configuração errado. Veja o log do servidor.",
+    bad_username: "O usuário só aceita minúsculas, dígitos e . _ -, de 2 a 64 caracteres.",
     login_required: "Please sign in first.",
     session_expired: "Your session has expired. Please sign in again.",
     bad_credentials: "Incorrect username or password.",
