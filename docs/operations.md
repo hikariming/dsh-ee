@@ -22,7 +22,7 @@
 
 dsh-ee 只通过已认证的 `/api/dsh/catalog` 下发地址和凭据，不代理或存储 Python / Java 包，也不把凭据写进可下载的接入组合包。**请使用只读账号，并通过 HTTPS 部署：员工机器会收到明文凭据。** 镜像变化会更新目录 revision / ETag，供接入插件轮询同步。
 
-此配置需配合支持依赖镜像的接入插件；本阶段提供服务端与管理界面，客户端应用将在后续插件版本提供。目标仅影响 DSH 内运行的 pip / Maven，不修改员工自己的 `~/.pip` 或 `~/.m2`；Maven 需要 3.9+。
+接入插件把 `pip.conf` 和 `settings.xml` 写入 DSH profile 的 `dsh-ee/` 目录（没有 profile 信息时退回 `$DSH_HOME/dsh-ee/`）；目录权限 0700、文件 0600。通过 DSH 进程环境中的 `PIP_CONFIG_FILE`、`MAVEN_ARGS` 供 shell 子进程使用，不修改员工自己的 `~/.pip` 或 `~/.m2`；Maven 需要 3.9+。启用 PyPI 时暂存并移除原有 `PIP_INDEX_URL` / `PIP_EXTRA_INDEX_URL`，移除镜像或卸载插件时恢复原环境；原 Maven 参数保留在镜像参数之后。旧服务端没有 `mirrors` 字段时不改变当前配置，返回空对象时清除镜像文件并恢复环境。该配置是便利设置，不是强制访问控制。
 
 ## 2. 部署
 

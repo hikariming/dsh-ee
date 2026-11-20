@@ -74,7 +74,7 @@ Go 写的 dsh-ee 服务端。目前实现：
 
 管理后台「npm 源」底部可设置 `mirrors.pypi`、`mirrors.maven`，每项含 `url`、可选 `username` 与只写 `secret`。例如 PyPI `https://nexus.corp/repository/pypi-group/simple`，Maven `https://nexus.corp/repository/maven-public/`。密码加密存库；设置响应只有 `hasSecret`，空密码保留旧值，清空 URL 则移除该项和凭据；URL 不允许内嵌账号密码。
 
-服务端仅在已认证的 `/api/dsh/catalog` 下发配置及明文凭据，不代理或存储这些制品，不写入可下载的接入组合包。请使用只读仓库账号并部署 HTTPS。需要后续支持依赖镜像的接入插件，目标仅影响 DSH 内的 pip / Maven、不覆盖员工自己的配置；Maven 需要 3.9+。详见 [运维手册](../docs/operations.md)。
+服务端仅在已认证的 `/api/dsh/catalog` 下发配置及明文凭据，不代理或存储这些制品，不写入可下载的接入组合包。请使用只读仓库账号并部署 HTTPS。接入插件在 DSH profile 内写入私有配置，通过进程环境供 DSH 内的 pip / Maven 使用；移除镜像时删除文件并恢复原环境，插件卸载时也恢复环境，不覆盖员工自己的配置。Maven 需要 3.9+。详见 [运维手册](../docs/operations.md)。
 
 ## npm 源
 
