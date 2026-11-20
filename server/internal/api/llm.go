@@ -625,8 +625,8 @@ func (s *Server) handleCreateModels(w http.ResponseWriter, r *http.Request) {
 		if m.Name == "" {
 			m.Name = m.UpstreamModel
 		}
-		if !modelNameRe.MatchString(m.UpstreamModel) || !modelNameRe.MatchString(m.Name) {
-			writeErrCode(w, http.StatusBadRequest, codeLLMModelInvalid, map[string]any{"model": m.UpstreamModel}, "模型名不合法："+m.UpstreamModel)
+		if bad := firstInvalidModelName(m.UpstreamModel, m.Name); bad != "" {
+			writeErrCode(w, http.StatusBadRequest, codeLLMModelInvalid, map[string]any{"model": bad}, "模型名不合法："+bad)
 			return
 		}
 		if err := s.store.CreateModel(r.Context(), m); err != nil {
@@ -754,4 +754,14 @@ func (s *Server) handleDeleteModel(w http.ResponseWriter, r *http.Request) {
 	s.audit(r, auditModelChange, target, map[string]any{"op": "delete", "id": id})
 	s.kickConnect()
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// firstInvalidModelName 返回第一个不合法的模型名，都合法时返回空串。
+func firstInvalidModelName(names ...string) string {
+	for _, n := range names {
+		if !modelNameRe.MatchString(n) {
+			return n
+		}
+	}
+	return ""
 }
