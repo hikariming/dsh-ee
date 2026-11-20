@@ -68,8 +68,16 @@ else
   raw="${DSH_EE_RAW_BASE:-https://raw.githubusercontent.com/$repo/$version/deploy}"
   echo "· 下载 $version 的部署文件"
   for f in compose.yml compose.tidb.yml compose.oceanbase.yml install.sh; do
-    curl -fsSL "$raw/$f" -o "$f.tmp" && mv "$f.tmp" "$f"
+    curl -fsSL "$raw/$f" -o "$f.tmp" || { rm -f ./*.tmp; echo "下载 $raw/$f 失败" >&2; exit 1; }
   done
+  for f in compose.yml compose.tidb.yml compose.oceanbase.yml; do mv "$f.tmp" "$f"; done
+  # 早于在线安装的版本里 install.sh 只认离线包，不能拿它替换自己
+  if grep -q '^  mode=online' install.sh.tmp; then
+    mv install.sh.tmp install.sh
+  else
+    rm -f install.sh.tmp
+    [ -f install.sh ] || cp "$0" install.sh 2>/dev/null || curl -fsSL "https://raw.githubusercontent.com/$repo/main/deploy/install.sh" -o install.sh
+  fi
   chmod +x install.sh
   echo "· 拉取镜像 $image"
   docker pull "$image"
