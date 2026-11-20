@@ -41,6 +41,7 @@ export class DependencyMirrors {
           url.password = encodeURIComponent(mirror.secret ?? "");
         }
         content = `[global]\nindex-url = ${url.href}\n`;
+        if (url.protocol === "http:") content += `trusted-host = ${url.hostname}\n`;
       } else {
         content = `<?xml version="1.0" encoding="UTF-8"?>\n<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">\n  <mirrors><mirror><id>dsh-ee-mirror</id><mirrorOf>*</mirrorOf><url>${xml(mirror.url)}</url></mirror></mirrors>\n${mirror.username ? `  <servers><server><id>dsh-ee-mirror</id><username>${xml(mirror.username)}</username><password>${xml(mirror.secret ?? "")}</password></server></servers>\n` : ""}</settings>\n`;
       }

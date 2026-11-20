@@ -42,6 +42,10 @@ test("mirrors: private escaped files, unchanged writes, env ownership, absent an
     fs.utimesSync(pip,1,1);
     manager.apply(payload);
     assert.equal(fs.statSync(pip).mtimeMs,1000);
+    manager.apply({ ...payload, pypi: { ...payload.pypi, url: "http://pypi.corp:8080/simple" } });
+    assert.match(fs.readFileSync(pip,"utf8"), /\ntrusted-host = pypi\.corp\n$/);
+    manager.apply(payload);
+    assert.equal(fs.readFileSync(pip,"utf8").includes("trusted-host"),false);
     manager.apply();
     assert.equal(manager.hosts().length,2);
     const doctor = await runLocalDoctor(ctx, normalizeConfig({base:"https://ee.corp"}), {resolve:async()=>undefined} as any, {} as any, {} as any, undefined, manager);

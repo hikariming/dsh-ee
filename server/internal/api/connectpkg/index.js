@@ -7463,6 +7463,8 @@ var DependencyMirrors = class {
         content = `[global]
 index-url = ${url.href}
 `;
+        if (url.protocol === "http:") content += `trusted-host = ${url.hostname}
+`;
       } else {
         content = `<?xml version="1.0" encoding="UTF-8"?>
 <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
