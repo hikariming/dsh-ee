@@ -141,6 +141,10 @@ func (s *Server) handlePutSettings(w http.ResponseWriter, r *http.Request) {
 		writeErrCode(w, http.StatusBadRequest, codeSettingsInvalidValue, nil, msg)
 		return
 	}
+	if err := s.sealDependencyMirrors(&next.Mirrors); err != nil {
+		s.internalErr(w, r, err)
+		return
+	}
 	// 认证方式由 LDAP 配置的开关决定；LogoRev 只能由 logo 上传接口更新。
 	next.Auth = cur.Auth
 	next.Brand.LogoRev = cur.Brand.LogoRev
@@ -181,6 +185,9 @@ func (s *Server) handlePutSettings(w http.ResponseWriter, r *http.Request) {
 const maxFeedSources = 10
 
 func validateSettings(v *store.AppSettings) string {
+	if msg := validateDependencyMirrors(&v.Mirrors); msg != "" {
+		return msg
+	}
 	v.OrgName = strings.TrimSpace(v.OrgName)
 	v.BaseURL = strings.TrimRight(strings.TrimSpace(v.BaseURL), "/")
 	if len([]rune(v.OrgName)) > 64 {

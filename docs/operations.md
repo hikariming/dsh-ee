@@ -16,6 +16,14 @@
 | HTTPS | dsh-ee 只提供 HTTP；TLS 在反向代理/负载均衡终止 | `deploy/README.md`「HTTPS 与访问地址」 |
 | 外网 | 不必须。上游模型、npm 回源、DSH 分发、dshfind 目录都可能需要外网；隔离网用离线包导入 | `server/README.md`「npm 源」 |
 
+### 员工 DSH 依赖镜像（Python / Java）
+
+在管理后台「npm 源」底部配置 PyPI / Maven 镜像地址，例如 `https://nexus.corp/repository/pypi-group/simple`、`https://nexus.corp/repository/maven-public/`，按需填写用户名和密码 / 令牌，再显式保存。密码加密存库，设置接口不回显；留空保持原密码，清空地址并保存会移除该项和凭据。
+
+dsh-ee 只通过已认证的 `/api/dsh/catalog` 下发地址和凭据，不代理或存储 Python / Java 包，也不把凭据写进可下载的接入组合包。**请使用只读账号，并通过 HTTPS 部署：员工机器会收到明文凭据。** 镜像变化会更新目录 revision / ETag，供接入插件轮询同步。
+
+此配置需配合支持依赖镜像的接入插件；本阶段提供服务端与管理界面，客户端应用将在后续插件版本提供。目标仅影响 DSH 内运行的 pip / Maven，不修改员工自己的 `~/.pip` 或 `~/.m2`；Maven 需要 3.9+。
+
 ## 2. 部署
 
 ### 2.1 离线安装包（推荐给试点）

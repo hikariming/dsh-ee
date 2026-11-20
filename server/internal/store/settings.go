@@ -11,6 +11,8 @@ import (
 // AppSettings 是系统设置，结构与前端 web/src/lib/types.ts 的 Settings 一一对应。
 // 服务端用到其中的组织名、企业作用域、收录与回源策略；其余字段原样保存给前端。
 type AppSettings struct {
+	Mirrors DependencyMirrors `json:"mirrors"`
+
 	OrgName string `json:"orgName"`
 	// 员工访问 dsh-ee 的地址；为空时前端用当前页面地址。
 	BaseURL string `json:"baseUrl"`
@@ -217,6 +219,24 @@ func (s *AppSettings) Clone() *AppSettings {
 
 const appSettingsKey = "app"
 
+type DependencyMirrors struct {
+	PyPI  DependencyMirror `json:"pypi"`
+	Maven DependencyMirror `json:"maven"`
+}
+
+type DependencyMirror struct {
+	URL       string `json:"url"`
+	Username  string `json:"username"`
+	Secret    string `json:"secret,omitempty"`
+	HasSecret bool   `json:"hasSecret"`
+	SecretEnc string `json:"-"`
+}
+
+type storedAppSettings struct {
+	*AppSettings
+	MirrorSecrets map[string]string `json:"mirrorSecrets,omitempty"`
+}
+
 // GetSettings 读取设置；库里缺的字段用默认值补齐（版本升级新增字段时不会变成零值）。
 func (s *Store) GetSettings(ctx context.Context) (*AppSettings, error) {
 	out := DefaultSettings()
@@ -228,8 +248,15 @@ func (s *Store) GetSettings(ctx context.Context) (*AppSettings, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal([]byte(raw), out); err != nil {
+	stored := storedAppSettings{AppSettings: out}
+	if err := json.Unmarshal([]byte(raw), &stored); err != nil {
 		return nil, err
+	}
+	out.Mirrors.PyPI.SecretEnc = stored.MirrorSecrets["pypi"]
+	out.Mirrors.Maven.SecretEnc = stored.MirrorSecrets["maven"]
+	for _, mirror := range []*DependencyMirror{&out.Mirrors.PyPI, &out.Mirrors.Maven} {
+		mirror.Secret = ""
+		mirror.HasSecret = mirror.SecretEnc != ""
 	}
 	if out.Registry.ExtraScopes == nil {
 		out.Registry.ExtraScopes = []string{}
@@ -238,7 +265,11 @@ func (s *Store) GetSettings(ctx context.Context) (*AppSettings, error) {
 }
 
 func (s *Store) SaveSettings(ctx context.Context, v *AppSettings, userID int64) error {
-	b, err := json.Marshal(v)
+	clean := v.Clone()
+	clean.Mirrors.PyPI.Secret, clean.Mirrors.Maven.Secret = "", ""
+	b, err := json.Marshal(storedAppSettings{AppSettings: clean, MirrorSecrets: map[string]string{
+		"pypi": clean.Mirrors.PyPI.SecretEnc, "maven": clean.Mirrors.Maven.SecretEnc,
+	}})
 	if err != nil {
 		return err
 	}
