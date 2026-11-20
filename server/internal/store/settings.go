@@ -34,8 +34,10 @@ type AppSettings struct {
 		Mode        string `json:"mode"`
 		DshfindFeed bool   `json:"dshfindFeed"`
 		// npmjs / npmmirror / custom
-		Registry       string `json:"registry"`
-		CustomRegistry string `json:"customRegistry"`
+		Registry       string       `json:"registry"`
+		CustomRegistry string       `json:"customRegistry"`
+		RepoKind       string       `json:"repoKind"`
+		Auth           UpstreamAuth `json:"auth"`
 		// 已预载插件出了新版本：auto 自动同步并上架 / review 同步后待审核 / off 不同步
 		AutoSync string `json:"autoSync"`
 		// dshfind 屏蔽名单：包名、@作用域/*、author:<dshfind 作者>。命中的包不出现在可预载列表里，
@@ -125,6 +127,20 @@ type FeedSource struct {
 	Enabled bool   `json:"enabled"`
 }
 
+type UpstreamAuth struct {
+	Type      string `json:"type"`
+	Username  string `json:"username"`
+	Secret    string `json:"secret,omitempty"`
+	HasSecret bool   `json:"hasSecret"`
+	SecretEnc string `json:"-"`
+}
+
+type storedAppSettings struct {
+	*AppSettings
+	UpstreamSecretEnc string            `json:"upstreamSecretEnc,omitempty"`
+	MirrorSecrets     map[string]string `json:"mirrorSecrets,omitempty"`
+}
+
 // BrandTheme 是 DSH 界面的配色。Colors 是几个常用位置（主色、侧栏等），
 // 服务端把它们换算成 DSH 的 --dsw-* 设计变量；Tokens 直接写变量，覆盖 Colors 的结果。
 type BrandTheme struct {
@@ -154,6 +170,7 @@ func DefaultSettings() *AppSettings {
 	s.Scoring.AllowEmployeeRating = true
 	s.Scoring.MinPreloadScore = 60
 	s.Upstream.Mode = "online"
+	s.Upstream.Auth.Type = "none"
 	s.Upstream.DshfindFeed = true
 	s.Upstream.Registry = "npmmirror"
 	s.Upstream.AutoSync = "review"
@@ -232,11 +249,6 @@ type DependencyMirror struct {
 	SecretEnc string `json:"-"`
 }
 
-type storedAppSettings struct {
-	*AppSettings
-	MirrorSecrets map[string]string `json:"mirrorSecrets,omitempty"`
-}
-
 // GetSettings 读取设置；库里缺的字段用默认值补齐（版本升级新增字段时不会变成零值）。
 func (s *Store) GetSettings(ctx context.Context) (*AppSettings, error) {
 	out := DefaultSettings()
@@ -258,6 +270,9 @@ func (s *Store) GetSettings(ctx context.Context) (*AppSettings, error) {
 		mirror.Secret = ""
 		mirror.HasSecret = mirror.SecretEnc != ""
 	}
+	out.Upstream.Auth.Secret = ""
+	out.Upstream.Auth.SecretEnc = stored.UpstreamSecretEnc
+	out.Upstream.Auth.HasSecret = stored.UpstreamSecretEnc != ""
 	if out.Registry.ExtraScopes == nil {
 		out.Registry.ExtraScopes = []string{}
 	}
@@ -267,7 +282,9 @@ func (s *Store) GetSettings(ctx context.Context) (*AppSettings, error) {
 func (s *Store) SaveSettings(ctx context.Context, v *AppSettings, userID int64) error {
 	clean := v.Clone()
 	clean.Mirrors.PyPI.Secret, clean.Mirrors.Maven.Secret = "", ""
-	b, err := json.Marshal(storedAppSettings{AppSettings: clean, MirrorSecrets: map[string]string{
+	clean.Upstream.Auth.Secret = ""
+	clean.Upstream.Auth.HasSecret = clean.Upstream.Auth.SecretEnc != ""
+	b, err := json.Marshal(storedAppSettings{AppSettings: clean, UpstreamSecretEnc: clean.Upstream.Auth.SecretEnc, MirrorSecrets: map[string]string{
 		"pypi": clean.Mirrors.PyPI.SecretEnc, "maven": clean.Mirrors.Maven.SecretEnc,
 	}})
 	if err != nil {
