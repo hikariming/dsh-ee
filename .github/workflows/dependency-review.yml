@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # 该 action 依赖仓库的 Dependency graph（GitHub 设置 → Security → 依赖图）。
       # 当前仓库未开启时它会直接报错；先按 advisory 处理，开启后删掉 continue-on-error 即变为阻断。
       - name: 审查依赖变更
