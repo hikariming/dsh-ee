@@ -23,7 +23,7 @@ jobs:
       OB_IMAGE: ${{ inputs.ob_image || 'oceanbase/oceanbase-ce:4.3.5-lts' }}
       CHROME: /usr/bin/google-chrome
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v6
         with:
           go-version-file: server/go.mod
