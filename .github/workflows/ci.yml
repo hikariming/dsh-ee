@@ -105,7 +105,7 @@ jobs:
         ports: ["4000:4000"]
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: server/go.mod
           cache-dependency-path: server/go.sum
@@ -172,7 +172,7 @@ jobs:
       DSH_EE_EMBED_ORIGINS: http://localhost:8099
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: server/go.mod
           cache-dependency-path: server/go.sum
