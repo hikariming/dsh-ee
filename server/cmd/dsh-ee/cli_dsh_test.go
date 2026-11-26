@@ -139,6 +139,22 @@ func TestDshInstallerPreservesPrerelease(t *testing.T) {
 	}
 }
 
+func TestDshInstallerStripsStandalonePlatformSuffix(t *testing.T) {
+	for _, tc := range []struct {
+		name, target, want string
+	}{
+		{"dsh-1.2.3-win.exe", "", "1.2.3"},
+		{"dsh-1.2.3-hotfix.1-windows.msi", "", "1.2.3-hotfix.1"},
+		{"dsh-1.2.3-mac.zip", "mac-arm64", "1.2.3"},
+		{"dsh-1.2.3-hotfix.1-linux.exe", "win-x64", "1.2.3-hotfix.1"},
+	} {
+		_, got, err := dshInstallerDetails(tc.name, tc.target, "")
+		if err != nil || got != tc.want {
+			t.Errorf("%s: got %q, %v; want %q", tc.name, got, err, tc.want)
+		}
+	}
+}
+
 func TestDshInstallerFilesSortByVersion(t *testing.T) {
 	dir := t.TempDir()
 	want := []string{

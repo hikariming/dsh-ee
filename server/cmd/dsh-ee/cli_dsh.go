@@ -34,8 +34,13 @@ You can also set DSH_EE_URL and DSH_EE_TOKEN; enable admin mode for the token in
 
 var (
 	dshInstallerVersionCore  = regexp.MustCompile(`\d+\.\d+\.\d+`)
-	dshInstallerTargetSuffix = regexp.MustCompile(`(?i)[-_ ](?:(?:macos|mac|windows|win)[-_ ])?(?:arm64|aarch64|x64|x86_64|intel)(?:[-_ ](?:macos|mac|windows|win))?$`)
+	dshInstallerTargetSuffix = regexp.MustCompile(`(?i)[-_ ](?:(?:` + dshInstallerOS + `[-_ ])?` + dshInstallerArch + `(?:[-_ ]` + dshInstallerOS + `)?|` + dshInstallerOS + `)$`)
 	dshImportVersion         = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$`)
+)
+
+const (
+	dshInstallerOS   = `(?:macos|mac|windows|win|linux)`
+	dshInstallerArch = `(?:arm64|aarch64|x64|x86_64|intel)`
 )
 
 func cliDsh(args []string, stdout, stderr io.Writer) int {
