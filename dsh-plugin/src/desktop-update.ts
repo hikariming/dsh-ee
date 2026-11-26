@@ -257,23 +257,50 @@ export class DesktopUpdateManager {
 
       const hash = createHash("sha512");
       const out = createWriteStream(partPath, { flags: "wx", mode: 0o600 });
+      let streamErr: Error | null = null;
+      out.on("error", (err) => {
+        streamErr = err;
+      });
       const reader = response.body.getReader();
       try {
         while (true) {
+          if (streamErr) throw streamErr;
           const { done, value } = await reader.read();
           if (done) break;
           if (!value?.byteLength) continue;
+          if (streamErr) throw streamErr;
           hash.update(value);
           this.downloaded += value.byteLength;
           if (!out.write(value)) {
             await new Promise<void>((resolve, reject) => {
-              out.once("drain", resolve);
-              out.once("error", reject);
+              if (streamErr) return reject(streamErr);
+              const onDrain = () => {
+                out.off("error", onErr);
+                resolve();
+              };
+              const onErr = (err: Error) => {
+                out.off("drain", onDrain);
+                reject(err);
+              };
+              out.once("drain", onDrain);
+              out.once("error", onErr);
             });
           }
         }
+        if (streamErr) throw streamErr;
         await new Promise<void>((resolve, reject) => {
-          out.end((err?: Error | null) => (err ? reject(err) : resolve()));
+          if (streamErr) return reject(streamErr);
+          const onFinish = () => {
+            out.off("error", onErr);
+            resolve();
+          };
+          const onErr = (err: Error) => {
+            out.off("finish", onFinish);
+            reject(err);
+          };
+          out.once("finish", onFinish);
+          out.once("error", onErr);
+          out.end();
         });
       } catch (err) {
         out.destroy();
