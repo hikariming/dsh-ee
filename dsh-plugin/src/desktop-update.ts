@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { createWriteStream } from "node:fs";
-import { mkdir, rename, rm, stat } from "node:fs/promises";
+import { mkdir, mkdtemp, rename, rm, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { compareVersions } from "./doctor.js";
@@ -85,6 +85,25 @@ function safeFileName(file: string): string {
   const base = path.basename(file);
   if (!base || base === "." || base === "..") return "dsh-installer";
   return base;
+}
+
+function safeVersionDir(version: string): string {
+  const cleaned = version.trim().replace(/[^a-zA-Z0-9._-]+/g, "_");
+  return cleaned && cleaned !== "." && cleaned !== ".." ? cleaned : "latest";
+}
+
+async function resolveNonOverwritingPath(dir: string, fileName: string): Promise<string> {
+  const ext = path.extname(fileName);
+  const stem = ext ? fileName.slice(0, -ext.length) : fileName;
+  for (let i = 0; i < 100; i++) {
+    const candidate = path.join(dir, i === 0 ? fileName : `${stem}-${i + 1}${ext}`);
+    try {
+      await stat(candidate);
+    } catch {
+      return candidate;
+    }
+  }
+  return path.join(dir, `${stem}-${randomUUID()}${ext}`);
 }
 
 export interface DesktopUpdateOptions {
@@ -219,15 +238,14 @@ export class DesktopUpdateManager {
     this.total = rel.size || 0;
     this.error = undefined;
     const fileName = safeFileName(rel.file);
-    let targetDir = this.downloadsDir;
+    let targetDir = path.join(this.downloadsDir, "dsh-ee-updates", safeVersionDir(rel.version));
     try {
-      await mkdir(targetDir, { recursive: true });
+      await mkdir(targetDir, { recursive: true, mode: 0o700 });
     } catch {
-      targetDir = path.join(os.tmpdir(), "dsh-ee-updates");
-      await mkdir(targetDir, { recursive: true });
+      targetDir = await mkdtemp(path.join(os.tmpdir(), "dsh-ee-updates-"));
     }
-    const finalPath = path.join(targetDir, fileName);
-    const partPath = `${finalPath}.part`;
+    const finalPath = await resolveNonOverwritingPath(targetDir, fileName);
+    const partPath = path.join(targetDir, `.${fileName}.${randomUUID()}.part`);
     try {
       const dlPath = `/dl/${encodeURIComponent(rel.target)}/${encodeURIComponent(rel.file)}`;
       const response = await this.http.fetch(dlPath, {}, 0);
@@ -238,7 +256,7 @@ export class DesktopUpdateManager {
       if (headerLen > 0) this.total = headerLen;
 
       const hash = createHash("sha512");
-      const out = createWriteStream(partPath);
+      const out = createWriteStream(partPath, { flags: "wx", mode: 0o600 });
       const reader = response.body.getReader();
       try {
         while (true) {
