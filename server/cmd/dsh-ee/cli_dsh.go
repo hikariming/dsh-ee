@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/Masterminds/semver/v3"
 )
 
 var dshPushUsage = cliText{
@@ -28,8 +30,9 @@ You can also set DSH_EE_URL and DSH_EE_TOKEN; enable admin mode for the token in
 }
 
 var (
-	dshInstallerVersion = regexp.MustCompile(`(?i)\d+\.\d+\.\d+(?:-(?:alpha|beta|rc|preview|nightly|dev|canary)(?:[.-]?\d+)*)?(?:\+[a-z0-9.]+)?`)
-	dshImportVersion    = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$`)
+	dshInstallerVersionCore  = regexp.MustCompile(`\d+\.\d+\.\d+`)
+	dshInstallerTargetSuffix = regexp.MustCompile(`(?i)[-_ ](?:(?:macos|mac|windows|win)[-_ ])?(?:arm64|aarch64|x64|x86_64|intel)(?:[-_ ](?:macos|mac|windows|win))?$`)
+	dshImportVersion         = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$`)
 )
 
 func cliDsh(args []string, stdout, stderr io.Writer) int {
@@ -168,7 +171,13 @@ func dshInstallerDetails(filename, target, releaseVersion string) (string, strin
 		return "", "", fmt.Errorf(tr("平台 %q 不支持此文件类型", "target %q does not support this file type"), target)
 	}
 	if releaseVersion == "" {
-		releaseVersion = dshInstallerVersion.FindString(stem)
+		versionStem := dshInstallerTargetSuffix.ReplaceAllString(stem, "")
+		if loc := dshInstallerVersionCore.FindStringIndex(versionStem); loc != nil {
+			candidate := versionStem[loc[0]:]
+			if _, err := semver.StrictNewVersion(candidate); err == nil {
+				releaseVersion = candidate
+			}
+		}
 	}
 	if !dshImportVersion.MatchString(releaseVersion) {
 		return "", "", errors.New(tr("无法识别有效版本；单独推送此文件并指定 --version", "cannot determine a valid version; push this file separately with --version"))

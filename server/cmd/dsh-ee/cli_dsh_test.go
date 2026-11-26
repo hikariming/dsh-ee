@@ -117,6 +117,27 @@ func TestDshPushRejectsUnknownMetadataAndRedirects(t *testing.T) {
 	}
 }
 
+func TestDshInstallerPreservesPrerelease(t *testing.T) {
+	for _, tc := range []struct {
+		name, want string
+	}{
+		{"dsh-1.2.3-win-x64.exe", "1.2.3"},
+		{"dsh-1.2.3-hotfix.1-win-x64.exe", "1.2.3-hotfix.1"},
+		{"dsh-1.2.3-hotfix.1+build-1-arm64-mac.dmg", "1.2.3-hotfix.1+build-1"},
+		{"dsh-1.2.3-hotfix.1.msi", "1.2.3-hotfix.1"},
+		{"dsh-1.2.3-hotfix_.1-win-x64.exe", ""},
+	} {
+		_, got, err := dshInstallerDetails(tc.name, "", "")
+		if tc.want == "" {
+			if err == nil || !strings.Contains(err.Error(), "--version") {
+				t.Errorf("%s: expected a --version diagnostic, got %q, %v", tc.name, got, err)
+			}
+		} else if err != nil || got != tc.want {
+			t.Errorf("%s: got %q, %v; want %q", tc.name, got, err, tc.want)
+		}
+	}
+}
+
 func writeDshInstaller(t *testing.T, dir, name string) string {
 	t.Helper()
 	path := filepath.Join(dir, name)
