@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -208,4 +208,88 @@ test("enterpriseHeader and enterprisePanel render desktop update section", () =>
   assert.match(text, /0\.3\.0/);
   assert.match(text, /修复代理问题/);
   assert.match(text, /下载新版 DSH/);
+});
+
+test("DesktopUpdateManager does not offer or auto-download when desktop version is unknown", async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "dsh-ee-desktop-unknown-"));
+  let fetchCount = 0;
+  const fakeHttp = {
+    async fetch() {
+      fetchCount++;
+      return new Response(Buffer.from("payload"), { status: 200 });
+    },
+  } as any;
+  const manager = new DesktopUpdateManager(
+    { base: "http://127.0.0.1:5188" },
+    fakeHttp,
+    { platform: "darwin", arch: "arm64", versions: { electron: "35.0.0" }, env: {}, downloadsDir: dir },
+  );
+  try {
+    manager.applyCatalog({
+      mode: "auto_download",
+      releases: {
+        "mac-arm64": {
+          id: 4,
+          target: "mac-arm64",
+          kind: "dmg",
+          version: "0.3.0",
+          file: "dsh-0.3.0-arm64.dmg",
+          size: 7,
+          sha512: createHash("sha512").update("payload").digest("base64"),
+          verified: true,
+          source: "import",
+          released_at: "2026-11-26T00:00:00Z",
+          download_url: "/dl/mac-arm64/dsh-0.3.0-arm64.dmg",
+        },
+      },
+    });
+    assert.equal(manager.status().updateAvailable, false);
+    assert.equal(fetchCount, 0);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("DesktopUpdateManager isolates downloads and does not overwrite existing files in Downloads", async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "dsh-ee-desktop-nooverwrite-"));
+  const existingPath = path.join(dir, "installer.dmg");
+  await writeFile(existingPath, "user-existing-file");
+  const payload = Buffer.from("new-dsh-installer");
+  const fakeHttp = {
+    async fetch() {
+      return new Response(payload, { status: 200 });
+    },
+  } as any;
+  const manager = new DesktopUpdateManager(
+    { base: "http://127.0.0.1:5188" },
+    fakeHttp,
+    { platform: "darwin", arch: "arm64", env: { DSH_DESKTOP_VERSION: "0.2.0" }, downloadsDir: dir },
+  );
+  try {
+    manager.applyCatalog({
+      mode: "notify",
+      releases: {
+        "mac-arm64": {
+          id: 5,
+          target: "mac-arm64",
+          kind: "dmg",
+          version: "0.3.0",
+          file: "installer.dmg",
+          size: payload.length,
+          sha512: createHash("sha512").update(payload).digest("base64"),
+          verified: true,
+          source: "import",
+          released_at: "2026-11-26T00:00:00Z",
+          download_url: "/dl/mac-arm64/installer.dmg",
+        },
+      },
+    });
+    const st = await manager.download();
+    assert.equal(st.downloadState, "ready");
+    assert.notEqual(st.localPath, existingPath);
+    assert.equal(await readFile(existingPath, "utf8"), "user-existing-file");
+    assert.deepEqual(await readFile(st.localPath!), payload);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

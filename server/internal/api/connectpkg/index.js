@@ -3315,9 +3315,9 @@ var TokenManager = class {
 
 // src/desktop-update.ts
 import { execFile } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { createWriteStream } from "node:fs";
-import { mkdir, rename, rm, stat } from "node:fs/promises";
+import { mkdir, mkdtemp, rename, rm, stat } from "node:fs/promises";
 import os2 from "node:os";
 import path3 from "node:path";
 
@@ -3467,6 +3467,23 @@ function safeFileName(file) {
   if (!base || base === "." || base === "..") return "dsh-installer";
   return base;
 }
+function safeVersionDir(version) {
+  const cleaned = version.trim().replace(/[^a-zA-Z0-9._-]+/g, "_");
+  return cleaned && cleaned !== "." && cleaned !== ".." ? cleaned : "latest";
+}
+async function resolveNonOverwritingPath(dir, fileName) {
+  const ext = path3.extname(fileName);
+  const stem = ext ? fileName.slice(0, -ext.length) : fileName;
+  for (let i = 0; i < 100; i++) {
+    const candidate = path3.join(dir, i === 0 ? fileName : `${stem}-${i + 1}${ext}`);
+    try {
+      await stat(candidate);
+    } catch {
+      return candidate;
+    }
+  }
+  return path3.join(dir, `${stem}-${randomUUID()}${ext}`);
+}
 var DesktopUpdateManager = class {
   constructor(config, http, options = {}) {
     this.config = config;
@@ -3504,7 +3521,7 @@ var DesktopUpdateManager = class {
   }
   isUpdateAvailable(rel) {
     if (!rel || this.mode === "off") return false;
-    if (!this.currentVersion) return true;
+    if (!this.currentVersion) return false;
     return compareVersions(rel.version, this.currentVersion) > 0;
   }
   applyCatalog(catalog) {
@@ -3577,15 +3594,14 @@ var DesktopUpdateManager = class {
     this.total = rel.size || 0;
     this.error = void 0;
     const fileName = safeFileName(rel.file);
-    let targetDir = this.downloadsDir;
+    let targetDir = path3.join(this.downloadsDir, "dsh-ee-updates", safeVersionDir(rel.version));
     try {
-      await mkdir(targetDir, { recursive: true });
+      await mkdir(targetDir, { recursive: true, mode: 448 });
     } catch {
-      targetDir = path3.join(os2.tmpdir(), "dsh-ee-updates");
-      await mkdir(targetDir, { recursive: true });
+      targetDir = await mkdtemp(path3.join(os2.tmpdir(), "dsh-ee-updates-"));
     }
-    const finalPath = path3.join(targetDir, fileName);
-    const partPath = `${finalPath}.part`;
+    const finalPath = await resolveNonOverwritingPath(targetDir, fileName);
+    const partPath = path3.join(targetDir, `.${fileName}.${randomUUID()}.part`);
     try {
       const dlPath = `/dl/${encodeURIComponent(rel.target)}/${encodeURIComponent(rel.file)}`;
       const response = await this.http.fetch(dlPath, {}, 0);
@@ -3595,24 +3611,51 @@ var DesktopUpdateManager = class {
       const headerLen = Number(response.headers.get("content-length") || 0);
       if (headerLen > 0) this.total = headerLen;
       const hash = createHash("sha512");
-      const out = createWriteStream(partPath);
+      const out = createWriteStream(partPath, { flags: "wx", mode: 384 });
+      let streamErr = null;
+      out.on("error", (err) => {
+        streamErr = err;
+      });
       const reader = response.body.getReader();
       try {
         while (true) {
+          if (streamErr) throw streamErr;
           const { done, value } = await reader.read();
           if (done) break;
           if (!value?.byteLength) continue;
+          if (streamErr) throw streamErr;
           hash.update(value);
           this.downloaded += value.byteLength;
           if (!out.write(value)) {
             await new Promise((resolve, reject) => {
-              out.once("drain", resolve);
-              out.once("error", reject);
+              if (streamErr) return reject(streamErr);
+              const onDrain = () => {
+                out.off("error", onErr);
+                resolve();
+              };
+              const onErr = (err) => {
+                out.off("drain", onDrain);
+                reject(err);
+              };
+              out.once("drain", onDrain);
+              out.once("error", onErr);
             });
           }
         }
+        if (streamErr) throw streamErr;
         await new Promise((resolve, reject) => {
-          out.end((err) => err ? reject(err) : resolve());
+          if (streamErr) return reject(streamErr);
+          const onFinish = () => {
+            out.off("error", onErr);
+            resolve();
+          };
+          const onErr = (err) => {
+            out.off("finish", onFinish);
+            reject(err);
+          };
+          out.once("finish", onFinish);
+          out.once("error", onErr);
+          out.end();
         });
       } catch (err) {
         out.destroy();

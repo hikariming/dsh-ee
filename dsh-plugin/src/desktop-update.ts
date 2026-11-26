@@ -155,7 +155,7 @@ export class DesktopUpdateManager {
 
   private isUpdateAvailable(rel?: DesktopReleaseInfo): boolean {
     if (!rel || this.mode === "off") return false;
-    if (!this.currentVersion) return true;
+    if (!this.currentVersion) return false;
     return compareVersions(rel.version, this.currentVersion) > 0;
   }
 
