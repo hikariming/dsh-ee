@@ -35,6 +35,7 @@ You can also set DSH_EE_URL and DSH_EE_TOKEN; enable admin mode for the token in
 var (
 	dshInstallerVersionCore  = regexp.MustCompile(`\d+\.\d+\.\d+`)
 	dshInstallerTargetSuffix = regexp.MustCompile(`(?i)[-_ ](?:(?:` + dshInstallerOS + `[-_ ])?` + dshInstallerArch + `(?:[-_ ]` + dshInstallerOS + `)?|` + dshInstallerOS + `)$`)
+	dshInstallerCopySuffix   = regexp.MustCompile(` \([0-9]+\)$`)
 	dshImportVersion         = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$`)
 )
 
@@ -192,6 +193,7 @@ func dshInstallerDetails(filename, target, releaseVersion string) (string, strin
 		return "", "", errors.New(tr("仅支持 .zip、.dmg、.exe、.msi", "only .zip, .dmg, .exe, and .msi are supported"))
 	}
 	stem := strings.TrimSuffix(filename, filepath.Ext(filename))
+	stem = dshInstallerCopySuffix.ReplaceAllString(stem, "")
 	if target == "" {
 		lower := strings.ToLower(stem)
 		switch {

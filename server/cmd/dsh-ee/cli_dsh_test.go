@@ -181,6 +181,24 @@ func TestDshInstallerFilesSortByVersion(t *testing.T) {
 	}
 }
 
+func TestDshPushBrowserRenamedFile(t *testing.T) {
+	const name = "dsh-1.2.3-mac-arm64 (1).zip"
+	file := writeDshInstaller(t, t.TempDir(), name)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		if q.Get("file") != name || q.Get("version") != "1.2.3" || q.Get("target") != "mac-arm64" {
+			t.Errorf("incorrect import metadata: %v", q)
+		}
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprint(w, `{"ok":true,"id":2}`)
+	}))
+	defer server.Close()
+	_, code, out, stderr := cli("dsh", "push", "--server", server.URL, "--token", "ee_at_fixture", file)
+	if code != exitOK || !strings.Contains(out, "1 成功，0 失败") || stderr != "" {
+		t.Fatalf("renamed file did not import: %d\n%s\n%s", code, out, stderr)
+	}
+}
+
 func TestDshPushWarnsOnRemoteHTTP(t *testing.T) {
 	missing := filepath.Join(t.TempDir(), "missing.exe")
 	for _, tc := range []struct {
