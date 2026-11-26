@@ -141,6 +141,19 @@ sha256sum -c SHA256SUMS
 
 自己打安装包：`make bundle VERSION=v0.1.0 ARCH=amd64`（鲲鹏等用 `ARCH=arm64`）。
 
+### 推送 DSH 桌面版离线安装包
+
+在能访问内网 dsh-ee 的机器上运行下列命令。先在「我的令牌」创建令牌并为其开启管理模式，账号需有 `distribution.manage` 或 `settings.manage` 权限。建议通过环境变量 `DSH_EE_TOKEN` 提供令牌，不要将它写入命令行：
+
+```bash
+dsh-ee dsh push --server https://ee.example.com ./installers/
+dsh-ee dsh push --server https://ee.example.com --version 1.2.3 ./dsh-latest-macos-arm64.dmg
+```
+
+可以传入多个路径。目录只扫描当前层的 `.zip`、`.dmg`、`.exe`、`.msi` 安装包。命令从文件名识别平台和版本；无法识别时，请单独推送该文件并指定 `--target` 和／或 `--version`。单文件也可用 `--sha512` 提供可信校验值（base64 或十六进制）。有任一项失败时命令返回非零退出码，已上传成功的文件不会回滚。
+
+安装包会出现在管理后台「DSH 分发」，标记为「离线导入」。同平台、同类型、同版本会替换已有安装包，仍适用服务端的版本保留策略。上传不需要连接官方服务器，也不会在员工电脑上安装软件。
+
 ### docker compose
 
 发布 tag 自动把 linux/amd64 与 linux/arm64 镜像推送到 GHCR。建议固定完整版本（如 `v0.3.1`）；
