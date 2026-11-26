@@ -144,6 +144,19 @@ The first run generates `.env` (master key and initial admin password) and print
 
 Build a bundle yourself with `make bundle VERSION=v0.1.0 ARCH=amd64` (or `ARCH=arm64`).
 
+### Push offline DSH Desktop installers
+
+From a machine that can reach your dsh-ee server, create a token under **My tokens** and enable admin mode on it. The account needs `distribution.manage` or `settings.manage`. Set `DSH_EE_TOKEN` in your shell instead of putting the token on the command line:
+
+```bash
+dsh-ee dsh push --server https://ee.example.com ./installers/
+dsh-ee dsh push --server https://ee.example.com --version 1.2.3 ./dsh-latest-macos-arm64.dmg
+```
+
+You can pass multiple paths. Directories are scanned one level deep for `.zip`, `.dmg`, `.exe`, and `.msi` installers. The CLI uses filenames to infer target and version; if it cannot, push the file on its own with `--target` and/or `--version`. For a single file, you can also give the trusted SHA-512 checksum with `--sha512` (base64 or hex). The command reports a nonzero exit status if any upload fails; successful uploads are not rolled back.
+
+Uploaded installers appear in **Admin → DSH Distribution** as offline imports. Uploading the same target, installer type, and version replaces the existing installer; the server's version retention policy applies. No official server connection is required, and the upload does not install anything on employee machines.
+
 ### Docker Compose
 
 Release tags automatically publish multi-platform images (linux/amd64 and linux/arm64) to GHCR.

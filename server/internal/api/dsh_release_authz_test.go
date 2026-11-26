@@ -5,7 +5,9 @@ import (
 	"context"
 	"io"
 	"log/slog"
+	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/hikariming/dsh-ee/server/internal/api"
@@ -78,6 +80,51 @@ func TestDshReleaseDistributionAuthz(t *testing.T) {
 		status, body := distUser.do(tc.method, tc.path, nil, nil)
 		expect(t, "distribution.manage 调 "+tc.what, status, tc.want, body)
 	}
+
+	tokenUser := createUser("dsh-push", []int64{createRole("dsh-push", rbac.DistributionManage, rbac.PortalView, rbac.KeysSelf)})
+	status, body = tokenUser.do("POST", "/api/me/tokens", map[string]any{
+		"name": "offline upload", "scopes": []string{rbac.ScopeAgent},
+	}, nil)
+	expect(t, "签发上传令牌", status, 201, body)
+	issued := decode[struct {
+		Token string
+		Info  struct{ ID string }
+	}](t, body)
+	importWithToken := func(token string, want int) {
+		t.Helper()
+		req, err := http.NewRequest("POST", ts.URL+"/api/admin/dsh-releases/import?target=win-x64&version=1.2.3&file=dsh.exe", strings.NewReader("installer"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if token != "" {
+			req.Header.Set("Authorization", "Bearer "+token)
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expect(t, "Bearer 导入", resp.StatusCode, want, body)
+	}
+	importWithToken("", 401)
+	importWithToken("ee_at_invalid", 401)
+	importWithToken(issued.Token, 403)
+	elevateURL := "/api/me/tokens/" + issued.Info.ID + "/elevate"
+	status, body = tokenUser.do("POST", elevateURL, map[string]any{"password": "dsh-push-pass-1", "hours": 1}, nil)
+	expect(t, "开启上传令牌的管理模式", status, 200, body)
+	importWithToken(issued.Token, 201)
+	status, body = distUser.do("GET", "/api/admin/dsh-releases", nil, nil)
+	expect(t, "查看 CLI 导入结果", status, 200, body)
+	if !bytes.Contains(body, []byte(`"file":"dsh.exe"`)) || !bytes.Contains(body, []byte(`"source":"import"`)) {
+		t.Fatalf("列表缺少导入结果：%s", body)
+	}
+	status, body = tokenUser.do("DELETE", elevateURL, nil, nil)
+	expect(t, "结束上传令牌的管理模式", status, 204, body)
+	importWithToken(issued.Token, 403)
 
 	// 3. PUT 设置：Distribution 段 distribution.manage 也能改，并且确实落库。
 	status, body = distUser.do("PUT", "/api/admin/settings", map[string]any{

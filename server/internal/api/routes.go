@@ -444,7 +444,7 @@ func (s *Server) routes() []route {
 		// DSH 分发页的操作权限：settings.manage 是旧行为，distribution.manage 是该页菜单对应的
 		// 权限点；两者任一即可，只给「管理 DSH 分发」的角色不再看到页面却处处 403。
 		prm("GET /api/admin/dsh-releases", s.handleAdminDshReleases, rbac.SettingsManage, rbac.DistributionManage),
-		prm("POST /api/admin/dsh-releases/import", s.handleImportDshRelease, rbac.SettingsManage, rbac.DistributionManage),
+		prmt("POST /api/admin/dsh-releases/import", s.handleImportDshRelease, rbac.SettingsManage, rbac.DistributionManage),
 		prm("POST /api/admin/dsh-releases/check", s.handleCheckDshReleases, rbac.SettingsManage, rbac.DistributionManage),
 		prm("POST /api/admin/dsh-releases/{id}/mirror", s.handleMirrorDshRelease, rbac.SettingsManage, rbac.DistributionManage),
 		prm("POST /api/admin/dsh-releases/{id}/recommend", s.handleRecommendDshRelease, rbac.SettingsManage, rbac.DistributionManage),

@@ -43,6 +43,8 @@ func runCLI(args []string, stdout, stderr io.Writer) (handled bool, code int) {
 		return true, cliConfig(args[1:], stdout, stderr)
 	case "package":
 		return true, cliPackage(args[1:], stdout, stderr)
+	case "dsh":
+		return true, cliDsh(args[1:], stdout, stderr)
 	case "doctor":
 		return true, cliDoctor(args[1:], stdout, stderr)
 	case "blob-gc":
