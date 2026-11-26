@@ -70,6 +70,8 @@ interface Store {
   /** 系统设置（服务端）；修改后约 0.6 秒合并保存。 */
   settings: Settings;
   updateSettings: (patch: (s: Settings) => Settings) => void;
+  /** 仅同步已通过专用接口保存到服务端的字段，避免后续设置编辑回写旧值。 */
+  syncSettings: (patch: (s: Settings) => Settings) => void;
   saveUpstream: (upstream: Settings["upstream"]) => Promise<void>;
   resetSettings: () => void;
   saveMirrors: (mirrors: Settings["mirrors"]) => Promise<void>;
@@ -159,6 +161,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setSettings((s) => {
         const next = patch(s);
         save(next);
+        return next;
+      }),
+    syncSettings: (patch) =>
+      setSettings((s) => {
+        const next = patch(s);
+        latest.current = next;
         return next;
       }),
     resetSettings: () => {

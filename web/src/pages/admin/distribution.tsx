@@ -73,7 +73,7 @@ function ReleaseTable({ target, title, rows, busy, highlighted, act }: { target:
 
 export default function AdminDistribution() {
   const { t } = useTranslation();
-  const { settings, updateSettings, notify } = useStore();
+  const { settings, updateSettings, syncSettings, notify } = useStore();
   const { data, loading, error, reload } = useApi(api.adminDshReleases);
   const fleet = useApi(api.adminDshReleaseClients);
   const [busy, setBusy] = useState(0);
@@ -97,6 +97,10 @@ export default function AdminDistribution() {
       const res = await api.updateDshReleasePush({ push_mode: pushMode, push_note: pushNote.trim() });
       setPushMode(res.push_mode);
       setPushNote(res.push_note);
+      syncSettings((s) => ({
+        ...s,
+        distribution: { ...s.distribution, pushMode: res.push_mode, pushNote: res.push_note },
+      }));
       notify(t("distributionAdmin.pushSaved"));
       void fleet.reload();
     } catch (e) {
