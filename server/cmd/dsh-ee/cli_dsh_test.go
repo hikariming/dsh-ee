@@ -165,6 +165,31 @@ func TestDshInstallerFilesSortByVersion(t *testing.T) {
 	}
 }
 
+func TestDshPushWarnsOnRemoteHTTP(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing.exe")
+	for _, tc := range []struct {
+		server, language, warning string
+	}{
+		{"http://ee.example.com", "en", "Warning: the token and installer will be sent over unencrypted HTTP"},
+		{"http://192.168.1.2:8080", "zh", "警告：令牌和安装包将通过未加密的 HTTP 传输"},
+		{"https://ee.example.com", "en", ""},
+		{"http://LOCALHOST.:8080", "en", ""},
+		{"http://127.0.0.1:8080", "en", ""},
+		{"http://[::1]:8080", "en", ""},
+	} {
+		_, code, _, stderr := cli("--lang="+tc.language, "dsh", "push", "--server", tc.server, "--token", "ee_at_fixture", missing)
+		if code != exitProblems || !strings.Contains(stderr, "missing.exe") {
+			t.Errorf("%s: push did not proceed to file validation: %d, %q", tc.server, code, stderr)
+		}
+		if tc.warning != "" && !strings.Contains(stderr, tc.warning) {
+			t.Errorf("%s: missing warning: %q", tc.server, stderr)
+		}
+		if tc.warning == "" && strings.Contains(stderr, "Warning:") {
+			t.Errorf("%s: unexpected warning: %q", tc.server, stderr)
+		}
+	}
+}
+
 func writeDshInstaller(t *testing.T, dir, name string) string {
 	t.Helper()
 	path := filepath.Join(dir, name)

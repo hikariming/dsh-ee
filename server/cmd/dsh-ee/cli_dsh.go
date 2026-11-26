@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -82,6 +83,10 @@ func cliDsh(args []string, stdout, stderr io.Writer) int {
 		return exitUsage
 	}
 	c.hc.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+	host := strings.TrimSuffix(u.Hostname(), ".")
+	if u.Scheme == "http" && !strings.EqualFold(host, "localhost") && !net.ParseIP(host).IsLoopback() {
+		fmt.Fprintln(stderr, tr("警告：令牌和安装包将通过未加密的 HTTP 传输；建议使用 HTTPS。", "Warning: the token and installer will be sent over unencrypted HTTP; use HTTPS if available."))
+	}
 
 	pushed, failed := 0, 0
 	reportFailure := func(file string, err error) {
