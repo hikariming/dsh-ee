@@ -3,6 +3,7 @@ import type { HttpClient } from "./http.js";
 import { installRequired } from "./plugins.js";
 import type { AppWorkbench } from "./workbench.js";
 import type { DependencyMirrors } from "./mirrors.js";
+import type { DesktopUpdateManager } from "./desktop-update.js";
 
 export interface CatalogApp {
   name: string;
@@ -120,7 +121,7 @@ export interface SkillsHandle {
   readCenter: () => Promise<CenterData>;
 }
 
-export async function registerSkills(ctx: DshContext, config: PluginConfig, http: HttpClient, mirrors?: DependencyMirrors): Promise<SkillsHandle> {
+export async function registerSkills(ctx: DshContext, config: PluginConfig, http: HttpClient, mirrors?: DependencyMirrors, desktopUpdate?: DesktopUpdateManager): Promise<SkillsHandle> {
   let catalog: any = { skills: [], required_plugins: [] };
   let etag = "";
   // 连不上 dsh-ee（没开 VPN、服务重启）时不抛错：技能来源照常注册，之后轮询自动恢复。
@@ -131,6 +132,7 @@ export async function registerSkills(ctx: DshContext, config: PluginConfig, http
       if (!response.ok) return false;
       const next = await response.json();
       mirrors?.apply(next.mirrors);
+      desktopUpdate?.applyCatalog(next.desktop_update);
       catalog = next;
       etag = response.headers.get("etag") ?? "loaded";
       return true;

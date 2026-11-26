@@ -174,6 +174,10 @@ var zh = {
     pluginNewer: "接入插件有新版本 {{latest}}（当前 {{version}}）",
     updateFix: "在 DSH 的「设置 → dsh-ee」点「更新到最新版」，装好后重启 DSH",
     pluginLatest: "接入插件 {{version}} 已是最新",
+    desktopNewer: "DSH 有企业推荐新版本 {{latest}}（当前 {{version}}）",
+    desktopRecommended: "管理员已推送新版 DSH {{latest}}",
+    desktopReadyFix: "安装包已下载到本地，在右侧企业面板点「打开安装包」完成升级",
+    desktopUpdateFix: "在右侧企业面板或「设置 → dsh-ee」下载新版 DSH 安装包",
     missingPlugins: "缺少必装插件 {{plugins}}",
     missingPluginsFix: "在 DSH 插件页安装，或重启 DSH 让接入插件自动安装",
     pluginsOk: "必装插件都已安装",
@@ -227,6 +231,16 @@ var zh = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: "（{{department}}）",
     headerTitle: "重新登录企业账号",
+    headerUpdateSuffix: " · 有新版 DSH",
+    desktopUpdateTitle: "DSH 版本更新",
+    desktopUpdateVersion: "企业推荐新版 DSH {{version}}",
+    desktopUpdateCurrent: "（当前 {{version}}）",
+    desktopUpdateDownloading: "正在下载安装包… {{percent}}%",
+    desktopUpdateReady: "安装包已下载：{{path}}",
+    desktopUpdateFailed: "下载失败：{{error}}",
+    desktopUpdateDownload: "下载新版 DSH",
+    desktopUpdateOpen: "打开安装包",
+    desktopUpdateHint: "下载并校验 SHA-512 后即可打开安装包覆盖安装，企业登录与插件配置会保留。",
     guideDescription: "查看企业账号、额度、模型与接入状态"
   },
   // turn-writes-view.ts：一轮末尾「已留痕」提示
@@ -418,7 +432,23 @@ var zh = {
     updateFailed: "更新失败：{{error}}",
     savedNotice: "已保存并生效。企业技能、微应用和工具正在按新地址同步；登录无效的话，去侧栏企业面板重新登录。",
     sidebarHint: "左侧栏只列前 3 个应用，其余在「查看更多」里；隐藏后首屏输入框下方和右侧企业面板里照样能打开企业应用。",
-    saving: "正在保存…"
+    saving: "正在保存…",
+    desktopTitle: "DSH 客户端版本",
+    desktopRecommended: "推荐版本 {{version}}",
+    desktopUpToDate: "当前版本已是最新或暂无推送版本",
+    desktopDownloading: "正在下载… {{percent}}%",
+    desktopDownload: "下载安装包",
+    desktopOpen: "打开安装包",
+    desktopReady: "已下载到 {{path}}",
+    desktopFailed: "下载失败：{{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "当前平台暂无管理员推荐的 DSH 安装包",
+    httpFailed: "下载安装包失败（HTTP {{status}}）",
+    checksumMismatch: "安装包 SHA-512 校验不通过，请重试或联系管理员",
+    notDownloaded: "尚未下载安装包",
+    fileMissing: "本地安装包已被移除，请重新下载",
+    opened: "已打开安装包所在位置：{{path}}"
   },
   // server-settings.ts：dsh-ee 地址的保存与连接测试
   serverSettings: {
@@ -740,6 +770,10 @@ var en = {
     pluginNewer: "A newer version of the connect plugin is available: {{latest}} (current {{version}})",
     updateFix: "Click “Update to latest” under Settings → dsh-ee in DSH, then restart DSH after it installs.",
     pluginLatest: "Connect plugin {{version}} is up to date",
+    desktopNewer: "A newer enterprise-recommended DSH version is available: {{latest}} (current {{version}})",
+    desktopRecommended: "Administrator pushed DSH {{latest}}",
+    desktopReadyFix: "Installer is downloaded locally. Click “Open installer” in the enterprise panel to upgrade.",
+    desktopUpdateFix: "Download the new DSH installer from the enterprise panel or Settings → dsh-ee.",
     missingPlugins: "Missing required plugins: {{plugins}}",
     missingPluginsFix: "Install them on the DSH plugins page, or restart DSH so the connect plugin installs them automatically.",
     pluginsOk: "All required plugins are installed",
@@ -793,6 +827,16 @@ var en = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "Sign in to the enterprise account again",
+    headerUpdateSuffix: " · DSH update",
+    desktopUpdateTitle: "DSH Update",
+    desktopUpdateVersion: "Enterprise recommends DSH {{version}}",
+    desktopUpdateCurrent: " (current {{version}})",
+    desktopUpdateDownloading: "Downloading installer… {{percent}}%",
+    desktopUpdateReady: "Installer downloaded: {{path}}",
+    desktopUpdateFailed: "Download failed: {{error}}",
+    desktopUpdateDownload: "Download DSH",
+    desktopUpdateOpen: "Open installer",
+    desktopUpdateHint: "Downloaded installers are SHA-512 verified; your sign-in and plugin settings are preserved after upgrading.",
     guideDescription: "View the enterprise account, quota, models and connection status"
   },
   // turn-writes-view.ts：一轮末尾「已留痕」提示
@@ -984,7 +1028,23 @@ var en = {
     updateFailed: "Update failed: {{error}}",
     savedNotice: "Saved and applied. Enterprise skills, micro-apps and tools are syncing to the new address; if the sign-in is no longer valid, sign in again from the sidebar enterprise panel.",
     sidebarHint: "The sidebar lists only the first 3 apps; the rest are under View more. When hidden, enterprise apps can still be opened below the composer on the home screen and from the enterprise panel on the right.",
-    saving: "Saving…"
+    saving: "Saving…",
+    desktopTitle: "DSH Desktop version",
+    desktopRecommended: "Recommended {{version}}",
+    desktopUpToDate: "Up to date or no pushed release for this platform",
+    desktopDownloading: "Downloading… {{percent}}%",
+    desktopDownload: "Download installer",
+    desktopOpen: "Open installer",
+    desktopReady: "Downloaded to {{path}}",
+    desktopFailed: "Download failed: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "No recommended DSH installer is available for this platform",
+    httpFailed: "Installer download failed (HTTP {{status}})",
+    checksumMismatch: "Installer SHA-512 verification failed; please retry or contact your administrator",
+    notDownloaded: "Installer has not been downloaded yet",
+    fileMissing: "Local installer file was removed; please download again",
+    opened: "Opened installer location: {{path}}"
   },
   // server-settings.ts：dsh-ee 地址的保存与连接测试
   serverSettings: {
@@ -1306,6 +1366,10 @@ var es = {
     pluginNewer: "Hay una versión más reciente del plugin de conexión: {{latest}} (actual {{version}})",
     updateFix: "Haz clic en “Actualizar a la última versión” en «Ajustes → dsh-ee» de DSH y reinicia DSH cuando termine la instalación.",
     pluginLatest: "El plugin de conexión {{version}} está actualizado",
+    desktopNewer: "Hay una versión empresarial recomendada de DSH: {{latest}} (actual {{version}})",
+    desktopRecommended: "El administrador publicó DSH {{latest}}",
+    desktopReadyFix: "El instalador ya está descargado. Haz clic en «Abrir instalador» en el panel de empresa para actualizar.",
+    desktopUpdateFix: "Descarga el nuevo instalador de DSH desde el panel de empresa o Ajustes → dsh-ee.",
     missingPlugins: "Faltan plugins obligatorios: {{plugins}}",
     missingPluginsFix: "Instálalos en la página de plugins de DSH o reinicia DSH para que el plugin de conexión los instale automáticamente.",
     pluginsOk: "Todos los plugins obligatorios están instalados",
@@ -1359,6 +1423,16 @@ var es = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "Volver a iniciar sesión en la cuenta de empresa",
+    headerUpdateSuffix: " · Nuevo DSH",
+    desktopUpdateTitle: "Actualización de DSH",
+    desktopUpdateVersion: "La empresa recomienda DSH {{version}}",
+    desktopUpdateCurrent: " (actual {{version}})",
+    desktopUpdateDownloading: "Descargando instalador… {{percent}}%",
+    desktopUpdateReady: "Instalador descargado: {{path}}",
+    desktopUpdateFailed: "Error al descargar: {{error}}",
+    desktopUpdateDownload: "Descargar DSH",
+    desktopUpdateOpen: "Abrir instalador",
+    desktopUpdateHint: "El instalador se verifica con SHA-512; tu sesión y plugins se conservan tras actualizar.",
     guideDescription: "Ver la cuenta de empresa, la cuota, los modelos y el estado de la conexión"
   },
   // turn-writes-view.ts：一轮末尾「已留痕」提示
@@ -1550,7 +1624,23 @@ var es = {
     updateFailed: "La actualización falló: {{error}}",
     savedNotice: "Guardado y aplicado. Las habilidades, microaplicaciones y herramientas de empresa se están sincronizando con la nueva dirección; si la sesión ya no es válida, vuelve a iniciarla desde el panel de empresa de la barra lateral.",
     sidebarHint: "La barra lateral solo muestra las 3 primeras aplicaciones; el resto está en “Ver más”. Si las ocultas, las aplicaciones de empresa se pueden abrir igualmente debajo del cuadro de texto de la pantalla de inicio y desde el panel de empresa de la derecha.",
-    saving: "Guardando…"
+    saving: "Guardando…",
+    desktopTitle: "Versión de DSH Desktop",
+    desktopRecommended: "Recomendada {{version}}",
+    desktopUpToDate: "Actualizado o sin versión publicada para esta plataforma",
+    desktopDownloading: "Descargando… {{percent}}%",
+    desktopDownload: "Descargar instalador",
+    desktopOpen: "Abrir instalador",
+    desktopReady: "Descargado en {{path}}",
+    desktopFailed: "Error al descargar: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "No hay un instalador de DSH recomendado para esta plataforma",
+    httpFailed: "Error al descargar el instalador (HTTP {{status}})",
+    checksumMismatch: "Falló la verificación SHA-512 del instalador; inténtalo de nuevo o contacta con el administrador",
+    notDownloaded: "El instalador aún no se ha descargado",
+    fileMissing: "El archivo del instalador local fue eliminado; descárgalo de nuevo",
+    opened: "Ubicación del instalador abierta: {{path}}"
   },
   // server-settings.ts：dsh-ee 地址的保存与连接测试
   serverSettings: {
@@ -1872,6 +1962,10 @@ var pt = {
     pluginNewer: "Há uma nova versão do plugin de conexão: {{latest}} (atual {{version}})",
     updateFix: "Em Configurações → dsh-ee no DSH, clique em “Atualizar para a versão mais recente” e reinicie o DSH depois de instalar.",
     pluginLatest: "O plugin de conexão {{version}} está atualizado",
+    desktopNewer: "Há uma nova versão recomendada do DSH pela empresa: {{latest}} (atual {{version}})",
+    desktopRecommended: "O administrador enviou o DSH {{latest}}",
+    desktopReadyFix: "O instalador foi baixado localmente. Clique em «Abrir instalador» no painel da empresa para atualizar.",
+    desktopUpdateFix: "Baixe o novo instalador do DSH no painel da empresa ou em Configurações → dsh-ee.",
     missingPlugins: "Plugins obrigatórios ausentes: {{plugins}}",
     missingPluginsFix: "Instale-os na página de plugins do DSH, ou reinicie o DSH para que o plugin de conexão os instale automaticamente.",
     pluginsOk: "Todos os plugins obrigatórios estão instalados",
@@ -1925,6 +2019,16 @@ var pt = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "Entrar novamente na conta da empresa",
+    headerUpdateSuffix: " · Novo DSH",
+    desktopUpdateTitle: "Atualização do DSH",
+    desktopUpdateVersion: "A empresa recomenda DSH {{version}}",
+    desktopUpdateCurrent: " (atual {{version}})",
+    desktopUpdateDownloading: "Baixando instalador… {{percent}}%",
+    desktopUpdateReady: "Instalador baixado: {{path}}",
+    desktopUpdateFailed: "Falha ao baixar: {{error}}",
+    desktopUpdateDownload: "Baixar DSH",
+    desktopUpdateOpen: "Abrir instalador",
+    desktopUpdateHint: "O instalador é verificado por SHA-512; sua sessão e plugins são mantidos após a atualização.",
     guideDescription: "Ver a conta da empresa, a cota, os modelos e o status da conexão"
   },
   // turn-writes-view.ts: aviso de “registrado” no fim da rodada
@@ -2116,7 +2220,23 @@ var pt = {
     updateFailed: "Falha na atualização: {{error}}",
     savedNotice: "Salvo e aplicado. As skills, os microapps e as ferramentas da empresa estão sendo sincronizados com o novo endereço; se o login não for mais válido, entre novamente pelo painel da empresa na barra lateral.",
     sidebarHint: "A barra lateral lista apenas os 3 primeiros aplicativos; os demais ficam em “Ver mais”. Quando ocultos, os aplicativos da empresa ainda podem ser abertos abaixo do campo de entrada na tela inicial e no painel da empresa à direita.",
-    saving: "Salvando…"
+    saving: "Salvando…",
+    desktopTitle: "Versão do DSH Desktop",
+    desktopRecommended: "Recomendada {{version}}",
+    desktopUpToDate: "Atualizado ou sem versão enviada para esta plataforma",
+    desktopDownloading: "Baixando… {{percent}}%",
+    desktopDownload: "Baixar instalador",
+    desktopOpen: "Abrir instalador",
+    desktopReady: "Baixado em {{path}}",
+    desktopFailed: "Falha ao baixar: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "Nenhum instalador recomendado do DSH está disponível para esta plataforma",
+    httpFailed: "Falha ao baixar o instalador (HTTP {{status}})",
+    checksumMismatch: "Falha na verificação SHA-512 do instalador; tente novamente ou contate o administrador",
+    notDownloaded: "O instalador ainda não foi baixado",
+    fileMissing: "O arquivo local do instalador foi removido; baixe novamente",
+    opened: "Local do instalador aberto: {{path}}"
   },
   // server-settings.ts: salvamento e teste de conexão do endereço dsh-ee
   serverSettings: {
@@ -2438,6 +2558,10 @@ var hi = {
     pluginNewer: "कनेक्ट प्लगइन का नया संस्करण उपलब्ध है {{latest}} (वर्तमान {{version}})",
     updateFix: "DSH में “सेटिंग्स → dsh-ee” के अंतर्गत “नवीनतम में अपडेट करें” पर क्लिक करें, इंस्टॉल होने पर DSH पुनः आरंभ करें",
     pluginLatest: "कनेक्ट प्लगइन {{version}} नवीनतम है",
+    desktopNewer: "एंटरप्राइज़ द्वारा अनुशंसित नया DSH संस्करण उपलब्ध है: {{latest}} (वर्तमान {{version}})",
+    desktopRecommended: "प्रशासक ने DSH {{latest}} पुश किया है",
+    desktopReadyFix: "इंस्टॉलर डाउनलोड हो चुका है। अपग्रेड करने के लिए एंटरप्राइज़ पैनल में “इंस्टॉलर खोलें” पर क्लिक करें।",
+    desktopUpdateFix: "एंटरप्राइज़ पैनल या सेटिंग्स → dsh-ee से नया DSH इंस्टॉलर डाउनलोड करें।",
     missingPlugins: "आवश्यक प्लगइन गायब हैं: {{plugins}}",
     missingPluginsFix: "DSH के प्लगइन पृष्ठ पर इंस्टॉल करें, या DSH पुनः आरंभ करें ताकि कनेक्ट प्लगइन उन्हें अपने आप इंस्टॉल कर दे",
     pluginsOk: "सभी आवश्यक प्लगइन इंस्टॉल हैं",
@@ -2491,6 +2615,16 @@ var hi = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "एंटरप्राइज़ खाते में फिर से साइन इन करें",
+    headerUpdateSuffix: " · नया DSH",
+    desktopUpdateTitle: "DSH अपडेट",
+    desktopUpdateVersion: "एंटरप्राइज़ DSH {{version}} की अनुशंसा करता है",
+    desktopUpdateCurrent: " (वर्तमान {{version}})",
+    desktopUpdateDownloading: "इंस्टॉलर डाउनलोड हो रहा है… {{percent}}%",
+    desktopUpdateReady: "इंस्टॉलर डाउनलोड हुआ: {{path}}",
+    desktopUpdateFailed: "डाउनलोड विफल: {{error}}",
+    desktopUpdateDownload: "DSH डाउनलोड करें",
+    desktopUpdateOpen: "इंस्टॉलर खोलें",
+    desktopUpdateHint: "इंस्टॉलर SHA-512 से सत्यापित होता है; अपग्रेड के बाद आपका साइन-इन और प्लगइन सुरक्षित रहते हैं।",
     guideDescription: "एंटरप्राइज़ खाता, कोटा, मॉडल और कनेक्शन स्थिति देखें"
   },
   // turn-writes-view.ts: the "logged in dsh-ee" notice at the end of a turn
@@ -2682,7 +2816,23 @@ var hi = {
     updateFailed: "अपडेट विफल: {{error}}",
     savedNotice: "सहेजा और लागू कर दिया गया। एंटरप्राइज़ स्किल, माइक्रो-ऐप्स और टूल नए पते पर सिंक हो रहे हैं; साइन इन अमान्य हो तो साइडबार के एंटरप्राइज़ पैनल से फिर से साइन इन करें।",
     sidebarHint: "साइडबार में केवल पहले 3 ऐप्स दिखाई देते हैं, बाकी “और देखें” में हैं; छिपाने के बाद भी होम स्क्रीन पर इनपुट बॉक्स के नीचे और दाईं ओर के एंटरप्राइज़ पैनल से एंटरप्राइज़ ऐप्स खोले जा सकते हैं।",
-    saving: "सहेजा जा रहा है…"
+    saving: "सहेजा जा रहा है…",
+    desktopTitle: "DSH Desktop संस्करण",
+    desktopRecommended: "अनुशंसित {{version}}",
+    desktopUpToDate: "नवीनतम है या इस प्लेटफ़ॉर्म के लिए कोई पुश संस्करण नहीं है",
+    desktopDownloading: "डाउनलोड हो रहा है… {{percent}}%",
+    desktopDownload: "इंस्टॉलर डाउनलोड करें",
+    desktopOpen: "इंस्टॉलर खोलें",
+    desktopReady: "डाउनलोड हुआ: {{path}}",
+    desktopFailed: "डाउनलोड विफल: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "इस प्लेटफ़ॉर्म के लिए कोई अनुशंसित DSH इंस्टॉलर उपलब्ध नहीं है",
+    httpFailed: "इंस्टॉलर डाउनलोड विफल (HTTP {{status}})",
+    checksumMismatch: "इंस्टॉलर का SHA-512 सत्यापन विफल रहा; कृपया पुनः प्रयास करें या प्रशासक से संपर्क करें",
+    notDownloaded: "इंस्टॉलर अभी तक डाउनलोड नहीं हुआ है",
+    fileMissing: "स्थानीय इंस्टॉलर फ़ाइल हटा दी गई है; कृपया पुनः डाउनलोड करें",
+    opened: "इंस्टॉलर स्थान खोला गया: {{path}}"
   },
   // server-settings.ts: saving the dsh-ee address and testing the connection
   serverSettings: {
@@ -3163,17 +3313,433 @@ var TokenManager = class {
   }
 };
 
+// src/desktop-update.ts
+import { execFile } from "node:child_process";
+import { createHash, randomUUID } from "node:crypto";
+import { createReadStream, createWriteStream } from "node:fs";
+import { mkdir, mkdtemp, rename, rm, stat } from "node:fs/promises";
+import os2 from "node:os";
+import path3 from "node:path";
+
+// src/doctor.ts
+function compareVersions(a, b) {
+  const parse = (v) => {
+    const [core, pre] = v.replace(/^v/, "").split("-", 2);
+    return { nums: core.split(".").map((n) => Number.parseInt(n, 10) || 0), pre };
+  };
+  const x = parse(a);
+  const y = parse(b);
+  for (let i = 0; i < Math.max(x.nums.length, y.nums.length); i++) {
+    const d = (x.nums[i] ?? 0) - (y.nums[i] ?? 0);
+    if (d) return d;
+  }
+  if (x.pre === y.pre) return 0;
+  if (!x.pre) return 1;
+  if (!y.pre) return -1;
+  return x.pre < y.pre ? -1 : 1;
+}
+async function runLocalDoctor(ctx, config, tokens, http, bridge, bindings, mirrors, desktopUpdate) {
+  const checks = [];
+  const add = (check) => checks.push(check);
+  for (const { kind, host } of mirrors?.hosts() ?? []) add({ id: `mirror.${kind}`, status: "ok", title: t(`doctor.mirror_${kind}`, { host }), detail: host });
+  if (bindings?.warning()) add({ id: "app_bindings", status: "warn", title: bindings.warning(), fix: t("doctor.appBindingsFix") });
+  const current = await tokens.resolve();
+  if (!current?.value) {
+    add({ id: "credential", status: "fail", title: t("doctor.noCredential"), fix: t("doctor.loginFix") });
+    return { summary: summarize(checks), checks };
+  }
+  add({ id: "credential", status: "ok", title: t("doctor.hasCredential"), detail: t("doctor.source", { source: current.source }) });
+  let reachable = true;
+  try {
+    const response = await http.fetch("/api/dsh/whoami");
+    if (response.ok) {
+      const me = await response.json();
+      const days = me.expires_at ? (new Date(me.expires_at).getTime() - Date.now()) / 864e5 : Infinity;
+      add(days < 7 ? { id: "token", status: "warn", title: t("doctor.expiringSoon", { days: Math.max(0, Math.ceil(days)) }), detail: me.username, fix: t("doctor.reLoginFix") } : { id: "token", status: "ok", title: t("doctor.signedInAs", { username: me.username, department: me.department }) });
+    } else {
+      const body = await response.json().catch(() => null);
+      if (response.status === 401) {
+        add({ id: "token", status: "fail", title: t("doctor.loginExpired"), detail: body?.code ?? "HTTP 401", fix: t("doctor.reLoginFix2") });
+      } else {
+        add({ id: "token", status: "fail", title: t("doctor.readAccountFailed", { status: response.status }), detail: t("doctor.serverRestarting"), fix: t("doctor.retryDiagnose") });
+      }
+    }
+  } catch {
+    reachable = false;
+    add({ id: "token", status: "fail", title: t("doctor.unreachable", { base: config.base }), fix: t("doctor.unreachableFix") });
+  }
+  const npmrc = npmrcState(ctx, config, current.value);
+  add(npmrc === "ok" ? { id: "npmrc", status: "ok", title: t("doctor.npmrcOk"), detail: npmrcPath(ctx) } : {
+    id: "npmrc",
+    status: "warn",
+    title: npmrc === "missing" ? t("doctor.npmrcMissing") : t("doctor.npmrcMismatch"),
+    detail: t("doctor.npmrcDetail", { path: npmrcPath(ctx) }),
+    fix: t("doctor.npmrcFix")
+  });
+  if (!reachable) return { summary: summarize(checks), checks };
+  let models = [];
+  try {
+    const response = await http.fetch("/v1/models");
+    if (response.ok) models = (await response.json()).data.map((m) => m.id);
+    add(models.length ? { id: "models", status: "ok", title: t("doctor.modelsAvailable", { models: models.join(t("common.listSeparator")) }) } : { id: "models", status: "fail", title: response.ok ? t("doctor.noModels") : t("doctor.readModelsHttp", { status: response.status }), fix: t("doctor.modelPermissionFix") });
+  } catch {
+    add({ id: "models", status: "fail", title: t("doctor.readModelsFailed") });
+  }
+  let server;
+  try {
+    const result = await bridge.callTool("ee_doctor", { action: "check" });
+    if (!result?.isError) server = JSON.parse(result.content[0].text);
+  } catch {
+  }
+  if (server) {
+    for (const c of server.checks ?? []) add({ ...c, id: `server.${c.id}` });
+    if (server.default_model && models.length && !models.includes(server.default_model)) {
+      add({ id: "default_model", status: "warn", title: t("doctor.defaultModelMissing", { model: server.default_model }), fix: t("doctor.chooseModelFix") });
+    }
+    if (server.connect_version && config.version !== "dev") {
+      add(compareVersions(server.connect_version, config.version) > 0 ? { id: "plugin_version", status: "warn", title: t("doctor.pluginNewer", { latest: server.connect_version, version: config.version }), fix: t("doctor.updateFix") } : { id: "plugin_version", status: "ok", title: t("doctor.pluginLatest", { version: config.version }) });
+    }
+    const manager = ctx.get("pluginManager");
+    if (manager && (server.required_plugins ?? []).length) {
+      try {
+        const have = new Set((await manager.listBundles()).filter((b) => b.installed || b.enabled).map((b) => b.name));
+        const missing = server.required_plugins.map((p) => p.name).filter((n) => !have.has(n));
+        add(missing.length ? { id: "required_plugins", status: "warn", title: t("doctor.missingPlugins", { plugins: missing.join(t("common.listSeparator")) }), fix: t("doctor.missingPluginsFix") } : { id: "required_plugins", status: "ok", title: t("doctor.pluginsOk") });
+      } catch {
+      }
+    }
+  }
+  const du = desktopUpdate?.status();
+  if (du?.updateAvailable && du.available) {
+    add({
+      id: "desktop_version",
+      status: "warn",
+      title: du.currentVersion ? t("doctor.desktopNewer", { latest: du.available.version, version: du.currentVersion }) : t("doctor.desktopRecommended", { latest: du.available.version }),
+      fix: du.downloadState === "ready" ? t("doctor.desktopReadyFix") : t("doctor.desktopUpdateFix")
+    });
+  }
+  add(bridge.status.error ? { id: "bridge", status: "fail", title: t("doctor.bridgeFailed"), detail: bridge.status.error, fix: t("doctor.bridgeFix") } : { id: "bridge", status: "ok", title: t("doctor.bridgeOk", { count: bridge.status.tools }) });
+  return { summary: summarize(checks), checks };
+}
+function summarize(checks) {
+  const fails = checks.filter((c) => c.status === "fail").length;
+  const warns = checks.filter((c) => c.status === "warn").length;
+  return fails ? t("doctor.summaryFail", { fails, warns }) : warns ? t("doctor.summaryWarn", { warns }) : t("doctor.summaryOk");
+}
+function registerDoctor(ctx, config, tokens, http, bridge, bindings, mirrors, desktopUpdate) {
+  const dispose = ctx.tools.register({
+    name: "ee_local_doctor",
+    description: t("doctor.description"),
+    parameters: { type: "object", properties: {} },
+    output: { schema: {}, render: (_args, value) => [{ type: "text", text: JSON.stringify(value) }] },
+    execute: async () => runLocalDoctor(ctx, config, tokens, http, bridge, bindings, mirrors, desktopUpdate)
+  });
+  ctx.effect(() => dispose);
+}
+
+// src/desktop-update.ts
+function detectDesktopTarget(platform = process.platform, arch = process.arch) {
+  if (platform === "darwin" && arch === "arm64") return "mac-arm64";
+  if (platform === "darwin" && arch === "x64") return "mac-x64";
+  if (platform === "win32" && arch === "x64") return "win-x64";
+  return null;
+}
+function detectDesktopVersion(versions = process.versions, env = process.env) {
+  const explicit = (env.DSH_DESKTOP_VERSION || env.DSH_VERSION || "").trim();
+  if (explicit) return explicit;
+  if (!versions.electron) return null;
+  return null;
+}
+function normalizeSha512(expected) {
+  const raw = expected.trim().replace(/^sha512:/i, "").replace(/\s+/g, "");
+  if (!raw) return null;
+  const b64 = Buffer.from(raw, "base64");
+  if (b64.length === 64 && b64.toString("base64").replace(/=+$/, "") === raw.replace(/=+$/, "")) {
+    return b64;
+  }
+  if (/^[0-9a-fA-F]{128}$/.test(raw)) {
+    return Buffer.from(raw, "hex");
+  }
+  return null;
+}
+function safeFileName(file) {
+  const base = path3.basename(file);
+  if (!base || base === "." || base === "..") return "dsh-installer";
+  return base;
+}
+function safeVersionDir(version) {
+  const cleaned = version.trim().replace(/[^a-zA-Z0-9._-]+/g, "_");
+  return cleaned && cleaned !== "." && cleaned !== ".." ? cleaned : "latest";
+}
+async function fileMatchesSha512(filePath, expected) {
+  try {
+    const info = await stat(filePath);
+    if (!info.isFile()) return null;
+    const hash = createHash("sha512");
+    await new Promise((resolve, reject) => {
+      const stream = createReadStream(filePath);
+      stream.on("data", (chunk) => hash.update(chunk));
+      stream.on("end", resolve);
+      stream.on("error", reject);
+    });
+    return hash.digest().equals(expected) ? info.size : null;
+  } catch {
+    return null;
+  }
+}
+async function resolveNonOverwritingPath(dir, fileName) {
+  const ext = path3.extname(fileName);
+  const stem = ext ? fileName.slice(0, -ext.length) : fileName;
+  for (let i = 0; i < 100; i++) {
+    const candidate = path3.join(dir, i === 0 ? fileName : `${stem}-${i + 1}${ext}`);
+    try {
+      await stat(candidate);
+    } catch {
+      return candidate;
+    }
+  }
+  return path3.join(dir, `${stem}-${randomUUID()}${ext}`);
+}
+var DesktopUpdateManager = class {
+  constructor(config, http, options = {}) {
+    this.config = config;
+    this.http = http;
+    const platform = options.platform ?? process.platform;
+    const arch = options.arch ?? process.arch;
+    this.target = detectDesktopTarget(platform, arch);
+    this.currentVersion = detectDesktopVersion(options.versions, options.env);
+    this.downloadsDir = options.downloadsDir ?? path3.join(os2.homedir(), "Downloads");
+    this.openFileImpl = options.openFile ?? ((filePath) => {
+      if (platform === "darwin") execFile("open", ["-R", filePath], () => {
+      });
+      else if (platform === "win32") execFile("explorer", [`/select,${filePath}`], () => {
+      });
+      else execFile("xdg-open", [path3.dirname(filePath)], () => {
+      });
+    });
+  }
+  target;
+  currentVersion;
+  downloadsDir;
+  openFileImpl;
+  mode = "off";
+  note = "";
+  available;
+  downloadState = "idle";
+  downloaded = 0;
+  total = 0;
+  localPath;
+  error;
+  downloadedKey = "";
+  activeDownload = null;
+  releaseKey(rel) {
+    return rel ? `${rel.target}:${rel.version}:${rel.sha512}:${rel.file}` : "";
+  }
+  isUpdateAvailable(rel) {
+    if (!rel || this.mode === "off") return false;
+    if (!this.currentVersion) return false;
+    return compareVersions(rel.version, this.currentVersion) > 0;
+  }
+  applyCatalog(catalog) {
+    if (!catalog || catalog.mode === "off") {
+      this.mode = "off";
+      this.note = "";
+      this.available = void 0;
+      return;
+    }
+    this.mode = catalog.mode === "auto_download" ? "auto_download" : "notify";
+    this.note = (catalog.note ?? "").trim();
+    const next = this.target ? catalog.releases?.[this.target] : void 0;
+    const prevKey = this.releaseKey(this.available);
+    const nextKey = this.releaseKey(next);
+    this.available = next;
+    if (prevKey !== nextKey && this.downloadedKey !== nextKey && !this.activeDownload) {
+      this.downloadState = "idle";
+      this.downloaded = 0;
+      this.total = next?.size ?? 0;
+      this.localPath = void 0;
+      this.error = void 0;
+    }
+    if (this.mode === "auto_download" && this.isUpdateAvailable(this.available) && this.downloadedKey !== nextKey && !this.activeDownload) {
+      void this.download().catch(() => void 0);
+    }
+  }
+  status() {
+    const updateAvailable = this.isUpdateAvailable(this.available);
+    return {
+      mode: this.mode,
+      note: this.note,
+      target: this.target,
+      currentVersion: this.currentVersion,
+      available: this.available,
+      updateAvailable,
+      downloadState: this.downloadState,
+      downloaded: this.downloaded,
+      total: this.total || this.available?.size || 0,
+      localPath: this.localPath,
+      error: this.error,
+      downloadPageUrl: `${this.config.base}/dsh`
+    };
+  }
+  async download() {
+    if (this.activeDownload) return this.activeDownload;
+    const rel = this.available;
+    if (!rel) {
+      this.downloadState = "error";
+      this.error = t("desktopUpdate.noRelease");
+      return this.status();
+    }
+    const key = this.releaseKey(rel);
+    if (this.downloadedKey === key && this.localPath) {
+      try {
+        await stat(this.localPath);
+        this.downloadState = "ready";
+        return this.status();
+      } catch {
+      }
+    }
+    const task = this.runDownload(rel, key).finally(() => {
+      this.activeDownload = null;
+    });
+    this.activeDownload = task;
+    return task;
+  }
+  async runDownload(rel, key) {
+    this.downloadState = "downloading";
+    this.downloaded = 0;
+    this.total = rel.size || 0;
+    this.error = void 0;
+    const fileName = safeFileName(rel.file);
+    let targetDir = path3.join(this.downloadsDir, "dsh-ee-updates", safeVersionDir(rel.version));
+    try {
+      await mkdir(targetDir, { recursive: true, mode: 448 });
+    } catch {
+      targetDir = await mkdtemp(path3.join(os2.tmpdir(), "dsh-ee-updates-"));
+    }
+    const expected = normalizeSha512(rel.sha512);
+    if (expected) {
+      const existingPath = path3.join(targetDir, fileName);
+      const existingSize = await fileMatchesSha512(existingPath, expected);
+      if (existingSize !== null) {
+        this.localPath = existingPath;
+        this.downloadedKey = key;
+        this.downloaded = existingSize;
+        this.total = existingSize;
+        this.downloadState = "ready";
+        this.error = void 0;
+        return this.status();
+      }
+    }
+    const finalPath = await resolveNonOverwritingPath(targetDir, fileName);
+    const partPath = path3.join(targetDir, `.dsh-${randomUUID()}.part`);
+    try {
+      const dlPath = `/dl/${encodeURIComponent(rel.target)}/${encodeURIComponent(rel.file)}`;
+      const response = await this.http.fetch(dlPath, {}, 0);
+      if (!response.ok || !response.body) {
+        throw new Error(t("desktopUpdate.httpFailed", { status: response.status }));
+      }
+      const headerLen = Number(response.headers.get("content-length") || 0);
+      if (headerLen > 0) this.total = headerLen;
+      const hash = createHash("sha512");
+      const out = createWriteStream(partPath, { flags: "wx", mode: 384 });
+      let streamErr = null;
+      out.on("error", (err) => {
+        streamErr = err;
+      });
+      const reader = response.body.getReader();
+      try {
+        while (true) {
+          if (streamErr) throw streamErr;
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (!value?.byteLength) continue;
+          if (streamErr) throw streamErr;
+          hash.update(value);
+          this.downloaded += value.byteLength;
+          if (!out.write(value)) {
+            await new Promise((resolve, reject) => {
+              if (streamErr) return reject(streamErr);
+              const onDrain = () => {
+                out.off("error", onErr);
+                resolve();
+              };
+              const onErr = (err) => {
+                out.off("drain", onDrain);
+                reject(err);
+              };
+              out.once("drain", onDrain);
+              out.once("error", onErr);
+            });
+          }
+        }
+        if (streamErr) throw streamErr;
+        await new Promise((resolve, reject) => {
+          if (streamErr) return reject(streamErr);
+          const onFinish = () => {
+            out.off("error", onErr);
+            resolve();
+          };
+          const onErr = (err) => {
+            out.off("finish", onFinish);
+            reject(err);
+          };
+          out.once("finish", onFinish);
+          out.once("error", onErr);
+          out.end();
+        });
+      } catch (err) {
+        out.destroy();
+        throw err;
+      }
+      if (expected) {
+        const actual = hash.digest();
+        if (!actual.equals(expected)) {
+          throw new Error(t("desktopUpdate.checksumMismatch"));
+        }
+      }
+      await rename(partPath, finalPath);
+      this.localPath = finalPath;
+      this.downloadedKey = key;
+      this.downloadState = "ready";
+      this.error = void 0;
+      return this.status();
+    } catch (err) {
+      await rm(partPath, { force: true }).catch(() => void 0);
+      this.downloadState = "error";
+      this.error = err instanceof Error ? err.message : String(err);
+      return this.status();
+    }
+  }
+  async openInstaller() {
+    if (!this.localPath) {
+      return { ok: false, message: t("desktopUpdate.notDownloaded") };
+    }
+    try {
+      await stat(this.localPath);
+    } catch {
+      this.downloadState = "idle";
+      this.localPath = void 0;
+      this.downloadedKey = "";
+      return { ok: false, message: t("desktopUpdate.fileMissing") };
+    }
+    this.openFileImpl(this.localPath);
+    return { ok: true, path: this.localPath, message: t("desktopUpdate.opened", { path: this.localPath }) };
+  }
+};
+
 // src/http.ts
-function dshHost(versions = process.versions) {
+function dshHost(versions = process.versions, platform = process.platform, arch = process.arch) {
   const electron = versions.electron;
   if (!electron) return "cli";
-  return `desktop/${process.env.DSH_DESKTOP_VERSION || process.env.DSH_VERSION || electron}`;
+  const ver = process.env.DSH_DESKTOP_VERSION || process.env.DSH_VERSION || electron;
+  const target = detectDesktopTarget(platform, arch);
+  return target ? `desktop/${ver}/${target}` : `desktop/${ver}`;
 }
 var HttpClient = class {
   constructor(tokens) {
     this.tokens = tokens;
   }
-  async fetch(path11, init = {}, timeoutMs = 3e4) {
+  async fetch(path12, init = {}, timeoutMs = 3e4) {
     const current = await this.tokens.resolve();
     const headers = new Headers(init.headers);
     if (current?.value) headers.set("Authorization", `Bearer ${current.value}`);
@@ -3182,15 +3748,15 @@ var HttpClient = class {
     if (!headers.has("X-DshEE-Host")) headers.set("X-DshEE-Host", dshHost());
     const timeout = timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : void 0;
     const signal = init.signal && timeout ? AbortSignal.any([init.signal, timeout]) : timeout ?? init.signal ?? void 0;
-    const response = await fetch(`${config.base}${path11}`, { ...init, headers, signal });
+    const response = await fetch(`${config.base}${path12}`, { ...init, headers, signal });
     if (response.status === 401 && current?.value) {
       const body = await response.clone().json().catch(() => null);
       if (body?.code?.startsWith("token_")) await this.tokens.invalidate(current.value);
     }
     return response;
   }
-  async json(path11, init) {
-    const response = await this.fetch(path11, init);
+  async json(path12, init) {
+    const response = await this.fetch(path12, init);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response.json();
   }
@@ -3198,8 +3764,8 @@ var HttpClient = class {
 
 // src/bot-chat.ts
 import fs2 from "node:fs";
-import path3 from "node:path";
-import { createHash } from "node:crypto";
+import path4 from "node:path";
+import { createHash as createHash2 } from "node:crypto";
 import { setTimeout as sleep } from "node:timers/promises";
 
 // src/host-session.ts
@@ -3328,7 +3894,7 @@ var BotChatRelay = class {
     this.http = http;
     this.provider = provider;
     this.options = options;
-    this.file = options.file ?? path3.join(dshHome(), "dsh-ee", `${provider}-chat.json`);
+    this.file = options.file ?? path4.join(dshHome(), "dsh-ee", `${provider}-chat.json`);
     this.delay = options.delay ?? ((ms, signal) => sleep(ms, void 0, { signal, ref: false }));
     ctx.on("tools/result", (exec, result) => {
       const turn = this.active;
@@ -3378,7 +3944,7 @@ var BotChatRelay = class {
       }, this.options.intervalMs ?? 1e3);
       watch.unref();
       try {
-        const scope = createHash("sha256").update(base + "\n" + token.value).digest("hex");
+        const scope = createHash2("sha256").update(base + "\n" + token.value).digest("hex");
         await this.poll(scope, current);
       } catch {
         if (!current.aborted) await this.delay(1e3, signal);
@@ -3416,7 +3982,7 @@ var BotChatRelay = class {
   }
   async assertScope(scope) {
     const token = await this.tokens.resolve();
-    if (!token?.value || createHash("sha256").update(this.config.base + "\n" + token.value).digest("hex") !== scope) throw new Error("Bot login changed");
+    if (!token?.value || createHash2("sha256").update(this.config.base + "\n" + token.value).digest("hex") !== scope) throw new Error("Bot login changed");
   }
   async session(scope) {
     let saved;
@@ -3427,7 +3993,7 @@ var BotChatRelay = class {
     const snapshot = this.ctx.sessions?.list?.getSnapshot?.();
     if (saved?.scope === scope && typeof saved.sessionId === "string" && snapshot?.byId?.[saved.sessionId]) return saved.sessionId;
     const sessionId = await createSession(this.ctx);
-    fs2.mkdirSync(path3.dirname(this.file), { recursive: true, mode: 448 });
+    fs2.mkdirSync(path4.dirname(this.file), { recursive: true, mode: 448 });
     const temp = `${this.file}.${process.pid}.tmp`;
     try {
       fs2.writeFileSync(temp, JSON.stringify({ scope, sessionId }), { mode: 384 });
@@ -3498,8 +4064,8 @@ var BotChatRelay = class {
 };
 
 // src/device.ts
-import { execFile } from "node:child_process";
-import os2 from "node:os";
+import { execFile as execFile2 } from "node:child_process";
+import os3 from "node:os";
 var DeviceFlow = class {
   constructor(config, fetchImpl = fetch) {
     this.config = config;
@@ -3511,7 +4077,7 @@ var DeviceFlow = class {
       method: "POST",
       headers: { "content-type": "application/json" },
       signal: AbortSignal.timeout(3e4),
-      body: JSON.stringify({ client_name: os2.hostname(), client_os: `${process.platform} ${os2.release()}`, client_version: this.config.version, ...setupCode ? { setup_code: setupCode } : {} })
+      body: JSON.stringify({ client_name: os3.hostname(), client_os: `${process.platform} ${os3.release()}`, client_version: this.config.version, ...setupCode ? { setup_code: setupCode } : {} })
     });
     if (!response.ok) {
       const body = await response.json().catch(() => null);
@@ -3555,9 +4121,9 @@ var DeviceFlow = class {
   }
 };
 function openBrowser(url) {
-  if (process.platform === "win32") execFile("cmd", ["/c", "start", "", url], () => {
+  if (process.platform === "win32") execFile2("cmd", ["/c", "start", "", url], () => {
   });
-  else execFile(process.platform === "darwin" ? "open" : "xdg-open", [url], () => {
+  else execFile2(process.platform === "darwin" ? "open" : "xdg-open", [url], () => {
   });
 }
 
@@ -3707,7 +4273,7 @@ function centerData(catalog, base) {
     legacy: !Array.isArray(catalog?.connections)
   };
 }
-async function registerSkills(ctx, config, http, mirrors) {
+async function registerSkills(ctx, config, http, mirrors, desktopUpdate) {
   let catalog = { skills: [], required_plugins: [] };
   let etag = "";
   const refresh = async () => {
@@ -3717,6 +4283,7 @@ async function registerSkills(ctx, config, http, mirrors) {
       if (!response.ok) return false;
       const next = await response.json();
       mirrors?.apply(next.mirrors);
+      desktopUpdate?.applyCatalog(next.desktop_update);
       catalog = next;
       etag = response.headers.get("etag") ?? "loaded";
       return true;
@@ -3805,8 +4372,8 @@ function appWebUrl(base, app) {
 
 // src/write-log.ts
 import fs3 from "node:fs";
-import path4 from "node:path";
-import { createHash as createHash2 } from "node:crypto";
+import path5 from "node:path";
+import { createHash as createHash3 } from "node:crypto";
 var MAX_PER_SESSION = 200;
 function writeOf(tool, args) {
   if (!tool || tool.annotations?.readOnlyHint === true) return void 0;
@@ -3839,14 +4406,14 @@ function writesBetween(records, from, to) {
 }
 var safeName = /^[A-Za-z0-9_-]{1,80}$/;
 var WriteLog = class {
-  constructor(dir = path4.join(dshHome(), "dsh-ee", "writes")) {
+  constructor(dir = path5.join(dshHome(), "dsh-ee", "writes")) {
     this.dir = dir;
   }
   sequence = 0;
   file(sessionId) {
     if (typeof sessionId !== "string" || !sessionId) throw new Error(t("writeLog.invalidSessionId"));
-    const name2 = safeName.test(sessionId) ? sessionId : createHash2("sha256").update(sessionId).digest("hex").slice(0, 32);
-    return path4.join(this.dir, `${name2}.json`);
+    const name2 = safeName.test(sessionId) ? sessionId : createHash3("sha256").update(sessionId).digest("hex").slice(0, 32);
+    return path5.join(this.dir, `${name2}.json`);
   }
   read(sessionId) {
     try {
@@ -4162,113 +4729,6 @@ ${need.preview}` : "";
       }
     };
   });
-}
-
-// src/doctor.ts
-function compareVersions(a, b) {
-  const parse = (v) => {
-    const [core, pre] = v.replace(/^v/, "").split("-", 2);
-    return { nums: core.split(".").map((n) => Number.parseInt(n, 10) || 0), pre };
-  };
-  const x = parse(a);
-  const y = parse(b);
-  for (let i = 0; i < Math.max(x.nums.length, y.nums.length); i++) {
-    const d = (x.nums[i] ?? 0) - (y.nums[i] ?? 0);
-    if (d) return d;
-  }
-  if (x.pre === y.pre) return 0;
-  if (!x.pre) return 1;
-  if (!y.pre) return -1;
-  return x.pre < y.pre ? -1 : 1;
-}
-async function runLocalDoctor(ctx, config, tokens, http, bridge, bindings, mirrors) {
-  const checks = [];
-  const add = (check) => checks.push(check);
-  for (const { kind, host } of mirrors?.hosts() ?? []) add({ id: `mirror.${kind}`, status: "ok", title: t(`doctor.mirror_${kind}`, { host }), detail: host });
-  if (bindings?.warning()) add({ id: "app_bindings", status: "warn", title: bindings.warning(), fix: t("doctor.appBindingsFix") });
-  const current = await tokens.resolve();
-  if (!current?.value) {
-    add({ id: "credential", status: "fail", title: t("doctor.noCredential"), fix: t("doctor.loginFix") });
-    return { summary: summarize(checks), checks };
-  }
-  add({ id: "credential", status: "ok", title: t("doctor.hasCredential"), detail: t("doctor.source", { source: current.source }) });
-  let reachable = true;
-  try {
-    const response = await http.fetch("/api/dsh/whoami");
-    if (response.ok) {
-      const me = await response.json();
-      const days = me.expires_at ? (new Date(me.expires_at).getTime() - Date.now()) / 864e5 : Infinity;
-      add(days < 7 ? { id: "token", status: "warn", title: t("doctor.expiringSoon", { days: Math.max(0, Math.ceil(days)) }), detail: me.username, fix: t("doctor.reLoginFix") } : { id: "token", status: "ok", title: t("doctor.signedInAs", { username: me.username, department: me.department }) });
-    } else {
-      const body = await response.json().catch(() => null);
-      if (response.status === 401) {
-        add({ id: "token", status: "fail", title: t("doctor.loginExpired"), detail: body?.code ?? "HTTP 401", fix: t("doctor.reLoginFix2") });
-      } else {
-        add({ id: "token", status: "fail", title: t("doctor.readAccountFailed", { status: response.status }), detail: t("doctor.serverRestarting"), fix: t("doctor.retryDiagnose") });
-      }
-    }
-  } catch {
-    reachable = false;
-    add({ id: "token", status: "fail", title: t("doctor.unreachable", { base: config.base }), fix: t("doctor.unreachableFix") });
-  }
-  const npmrc = npmrcState(ctx, config, current.value);
-  add(npmrc === "ok" ? { id: "npmrc", status: "ok", title: t("doctor.npmrcOk"), detail: npmrcPath(ctx) } : {
-    id: "npmrc",
-    status: "warn",
-    title: npmrc === "missing" ? t("doctor.npmrcMissing") : t("doctor.npmrcMismatch"),
-    detail: t("doctor.npmrcDetail", { path: npmrcPath(ctx) }),
-    fix: t("doctor.npmrcFix")
-  });
-  if (!reachable) return { summary: summarize(checks), checks };
-  let models = [];
-  try {
-    const response = await http.fetch("/v1/models");
-    if (response.ok) models = (await response.json()).data.map((m) => m.id);
-    add(models.length ? { id: "models", status: "ok", title: t("doctor.modelsAvailable", { models: models.join(t("common.listSeparator")) }) } : { id: "models", status: "fail", title: response.ok ? t("doctor.noModels") : t("doctor.readModelsHttp", { status: response.status }), fix: t("doctor.modelPermissionFix") });
-  } catch {
-    add({ id: "models", status: "fail", title: t("doctor.readModelsFailed") });
-  }
-  let server;
-  try {
-    const result = await bridge.callTool("ee_doctor", { action: "check" });
-    if (!result?.isError) server = JSON.parse(result.content[0].text);
-  } catch {
-  }
-  if (server) {
-    for (const c of server.checks ?? []) add({ ...c, id: `server.${c.id}` });
-    if (server.default_model && models.length && !models.includes(server.default_model)) {
-      add({ id: "default_model", status: "warn", title: t("doctor.defaultModelMissing", { model: server.default_model }), fix: t("doctor.chooseModelFix") });
-    }
-    if (server.connect_version && config.version !== "dev") {
-      add(compareVersions(server.connect_version, config.version) > 0 ? { id: "plugin_version", status: "warn", title: t("doctor.pluginNewer", { latest: server.connect_version, version: config.version }), fix: t("doctor.updateFix") } : { id: "plugin_version", status: "ok", title: t("doctor.pluginLatest", { version: config.version }) });
-    }
-    const manager = ctx.get("pluginManager");
-    if (manager && (server.required_plugins ?? []).length) {
-      try {
-        const have = new Set((await manager.listBundles()).filter((b) => b.installed || b.enabled).map((b) => b.name));
-        const missing = server.required_plugins.map((p) => p.name).filter((n) => !have.has(n));
-        add(missing.length ? { id: "required_plugins", status: "warn", title: t("doctor.missingPlugins", { plugins: missing.join(t("common.listSeparator")) }), fix: t("doctor.missingPluginsFix") } : { id: "required_plugins", status: "ok", title: t("doctor.pluginsOk") });
-      } catch {
-      }
-    }
-  }
-  add(bridge.status.error ? { id: "bridge", status: "fail", title: t("doctor.bridgeFailed"), detail: bridge.status.error, fix: t("doctor.bridgeFix") } : { id: "bridge", status: "ok", title: t("doctor.bridgeOk", { count: bridge.status.tools }) });
-  return { summary: summarize(checks), checks };
-}
-function summarize(checks) {
-  const fails = checks.filter((c) => c.status === "fail").length;
-  const warns = checks.filter((c) => c.status === "warn").length;
-  return fails ? t("doctor.summaryFail", { fails, warns }) : warns ? t("doctor.summaryWarn", { warns }) : t("doctor.summaryOk");
-}
-function registerDoctor(ctx, config, tokens, http, bridge, bindings, mirrors) {
-  const dispose = ctx.tools.register({
-    name: "ee_local_doctor",
-    description: t("doctor.description"),
-    parameters: { type: "object", properties: {} },
-    output: { schema: {}, render: (_args, value) => [{ type: "text", text: JSON.stringify(value) }] },
-    execute: async () => runLocalDoctor(ctx, config, tokens, http, bridge, bindings, mirrors)
-  });
-  ctx.effect(() => dispose);
 }
 
 // node_modules/@deepseek-ai/cosmokit/lib/index.js
@@ -6312,8 +6772,8 @@ function validateName(subject, value) {
 }
 
 // src/brand.ts
-var _vote_dec, _writeTableRow_dec, _insertFormRow_dec, _webLink_dec, _updatePlugin_dec, _saveServer_dec, _testServer_dec, _serverSettings_dec, _doctor_dec, _login_dec, _overview_dec, _turnWrites_dec, _kbDoc_dec, _setChecklist_dec, _checklists_dec, _board_dec, _workbenchData_dec, _unbindApp_dec, _bindApp_dec, _appBindings_dec, _setSubscription_dec, _center_dec, _disableApp_dec, _enableApp_dec, _availableApps_dec, _apps_dec, _brand_dec, _a, _init;
-var DshEEClientService = class extends (_a = TypertRemoteService, _brand_dec = [Remote], _apps_dec = [Remote], _availableApps_dec = [Remote], _enableApp_dec = [Remote], _disableApp_dec = [Remote], _center_dec = [Remote], _setSubscription_dec = [Remote], _appBindings_dec = [Remote], _bindApp_dec = [Remote], _unbindApp_dec = [Remote], _workbenchData_dec = [Remote], _board_dec = [Remote], _checklists_dec = [Remote], _setChecklist_dec = [Remote], _kbDoc_dec = [Remote], _turnWrites_dec = [Remote], _overview_dec = [Remote], _login_dec = [Remote], _doctor_dec = [Remote], _serverSettings_dec = [Remote], _testServer_dec = [Remote], _saveServer_dec = [Remote], _updatePlugin_dec = [Remote], _webLink_dec = [Remote], _insertFormRow_dec = [Remote], _writeTableRow_dec = [Remote], _vote_dec = [Remote], _a) {
+var _vote_dec, _writeTableRow_dec, _insertFormRow_dec, _webLink_dec, _openDesktopUpdate_dec, _downloadDesktopUpdate_dec, _desktopUpdate_dec, _updatePlugin_dec, _saveServer_dec, _testServer_dec, _serverSettings_dec, _doctor_dec, _login_dec, _overview_dec, _turnWrites_dec, _kbDoc_dec, _setChecklist_dec, _checklists_dec, _board_dec, _workbenchData_dec, _unbindApp_dec, _bindApp_dec, _appBindings_dec, _setSubscription_dec, _center_dec, _disableApp_dec, _enableApp_dec, _availableApps_dec, _apps_dec, _brand_dec, _a, _init;
+var DshEEClientService = class extends (_a = TypertRemoteService, _brand_dec = [Remote], _apps_dec = [Remote], _availableApps_dec = [Remote], _enableApp_dec = [Remote], _disableApp_dec = [Remote], _center_dec = [Remote], _setSubscription_dec = [Remote], _appBindings_dec = [Remote], _bindApp_dec = [Remote], _unbindApp_dec = [Remote], _workbenchData_dec = [Remote], _board_dec = [Remote], _checklists_dec = [Remote], _setChecklist_dec = [Remote], _kbDoc_dec = [Remote], _turnWrites_dec = [Remote], _overview_dec = [Remote], _login_dec = [Remote], _doctor_dec = [Remote], _serverSettings_dec = [Remote], _testServer_dec = [Remote], _saveServer_dec = [Remote], _updatePlugin_dec = [Remote], _desktopUpdate_dec = [Remote], _downloadDesktopUpdate_dec = [Remote], _openDesktopUpdate_dec = [Remote], _webLink_dec = [Remote], _insertFormRow_dec = [Remote], _writeTableRow_dec = [Remote], _vote_dec = [Remote], _a) {
   constructor(ctx, actions) {
     super(ctx, "dshEE");
     this.actions = actions;
@@ -6388,6 +6848,15 @@ var DshEEClientService = class extends (_a = TypertRemoteService, _brand_dec = [
   async updatePlugin() {
     return this.actions.updatePlugin();
   }
+  async desktopUpdate() {
+    return this.actions.desktopUpdate();
+  }
+  async downloadDesktopUpdate() {
+    return this.actions.downloadDesktopUpdate();
+  }
+  async openDesktopUpdate() {
+    return this.actions.openDesktopUpdate();
+  }
   async webLink(request) {
     return this.actions.webLink(request ?? {});
   }
@@ -6425,6 +6894,9 @@ __decorateElement(_init, 1, "serverSettings", _serverSettings_dec, DshEEClientSe
 __decorateElement(_init, 1, "testServer", _testServer_dec, DshEEClientService);
 __decorateElement(_init, 1, "saveServer", _saveServer_dec, DshEEClientService);
 __decorateElement(_init, 1, "updatePlugin", _updatePlugin_dec, DshEEClientService);
+__decorateElement(_init, 1, "desktopUpdate", _desktopUpdate_dec, DshEEClientService);
+__decorateElement(_init, 1, "downloadDesktopUpdate", _downloadDesktopUpdate_dec, DshEEClientService);
+__decorateElement(_init, 1, "openDesktopUpdate", _openDesktopUpdate_dec, DshEEClientService);
 __decorateElement(_init, 1, "webLink", _webLink_dec, DshEEClientService);
 __decorateElement(_init, 1, "insertFormRow", _insertFormRow_dec, DshEEClientService);
 __decorateElement(_init, 1, "writeTableRow", _writeTableRow_dec, DshEEClientService);
@@ -6451,7 +6923,7 @@ async function bridgeJson(bridge, name2, args) {
   if (typeof text !== "string") throw new Error(t("overview.toolNoJson"));
   return JSON.parse(text);
 }
-async function readEnterpriseOverview(config, http, bridge) {
+async function readEnterpriseOverview(config, http, bridge, desktopUpdate) {
   const me = await http.json("/api/dsh/whoami");
   const [usage, modelList, doctor] = await Promise.all([
     bridgeJson(bridge, "ee_me", { action: "usage" }).catch(() => void 0),
@@ -6464,15 +6936,16 @@ async function readEnterpriseOverview(config, http, bridge) {
     models: modelList?.data?.map((model) => model.id) ?? [],
     default_model: doctor?.default_model,
     version: config.version,
-    latest_version: doctor?.connect_version
+    latest_version: doctor?.connect_version,
+    desktop_update: desktopUpdate?.status()
   };
 }
 
 // src/server-settings.ts
 import fs4 from "node:fs";
-import path5 from "node:path";
+import path6 from "node:path";
 function serverSettingsPath() {
-  return path5.join(dshHome(), "dsh-ee", "server.json");
+  return path6.join(dshHome(), "dsh-ee", "server.json");
 }
 function normalizeBase(input) {
   const raw = String(input ?? "").trim().replace(/\/+$/, "");
@@ -6498,7 +6971,7 @@ function writeBaseOverride(base) {
     fs4.rmSync(file, { force: true });
     return;
   }
-  fs4.mkdirSync(path5.dirname(file), { recursive: true, mode: 448 });
+  fs4.mkdirSync(path6.dirname(file), { recursive: true, mode: 448 });
   fs4.writeFileSync(file, `${JSON.stringify({ base }, null, 2)}
 `, { mode: 384 });
 }
@@ -6618,8 +7091,8 @@ async function updateConnect(ctx, config, http) {
 
 // src/upload.ts
 import fs5 from "node:fs";
-import os3 from "node:os";
-import path6 from "node:path";
+import os4 from "node:os";
+import path7 from "node:path";
 var MAX_BYTES = 100 * 1024 * 1024;
 function fail(text) {
   return { content: [{ type: "text", text }], isError: true };
@@ -6627,16 +7100,16 @@ function fail(text) {
 async function uploadPackage(http, args) {
   const raw = String(args.path ?? "").trim();
   if (!raw) return fail(t("upload.missingPath"));
-  const file = path6.resolve(raw.startsWith("~") ? path6.join(os3.homedir(), raw.slice(1)) : raw);
+  const file = path7.resolve(raw.startsWith("~") ? path7.join(os4.homedir(), raw.slice(1)) : raw);
   if (!/\.(tgz|tar\.gz)$/i.test(file)) return fail(t("upload.notTarball"));
-  let stat;
+  let stat2;
   try {
-    stat = fs5.statSync(file);
+    stat2 = fs5.statSync(file);
   } catch {
     return fail(t("upload.fileNotFound", { file }));
   }
-  if (!stat.isFile()) return fail(t("upload.notAFile", { file }));
-  if (stat.size > MAX_BYTES) return fail(t("upload.tooLarge"));
+  if (!stat2.isFile()) return fail(t("upload.notAFile", { file }));
+  if (stat2.size > MAX_BYTES) return fail(t("upload.tooLarge"));
   let response;
   try {
     response = await http.fetch("/api/agent/packages", {
@@ -6655,9 +7128,9 @@ async function uploadPackage(http, args) {
 
 // src/app-bindings.ts
 import fs6 from "node:fs";
-import path7 from "node:path";
+import path8 from "node:path";
 var AppBindings = class {
-  constructor(file = path7.join(dshHome(), "dsh-ee", "apps.json")) {
+  constructor(file = path8.join(dshHome(), "dsh-ee", "apps.json")) {
     this.file = file;
   }
   sequence = 0;
@@ -6702,7 +7175,7 @@ var AppBindings = class {
     }
   }
   write(bindings) {
-    fs6.mkdirSync(path7.dirname(this.file), { recursive: true, mode: 448 });
+    fs6.mkdirSync(path8.dirname(this.file), { recursive: true, mode: 448 });
     const temp = `${this.file}.${process.pid}.${++this.sequence}.tmp`;
     try {
       fs6.writeFileSync(temp, JSON.stringify({ version: 1, bindings }, null, 2) + "\n", { mode: 384 });
@@ -6756,8 +7229,8 @@ async function exchangeWebLink(base, http, url) {
 
 // src/workbench-host.ts
 import fs7 from "node:fs";
-import path8 from "node:path";
-import { createHash as createHash3 } from "node:crypto";
+import path9 from "node:path";
+import { createHash as createHash4 } from "node:crypto";
 
 // src/workbench.ts
 var checklistKey = (pane, widget) => `${pane}:${widget}`;
@@ -6925,8 +7398,8 @@ var safeName2 = /^[A-Za-z0-9_-]{1,80}$/;
 function sessionFile(dir, app, sessionId) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(app) || app.length > 48) throw new Error(t("workbenchHost.invalidAppName"));
   if (typeof sessionId !== "string" || !sessionId) throw new Error(t("workbenchHost.invalidSessionId"));
-  const session = safeName2.test(sessionId) ? sessionId : createHash3("sha256").update(sessionId).digest("hex").slice(0, 32);
-  return path8.join(dir, `${app}--${session}.json`);
+  const session = safeName2.test(sessionId) ? sessionId : createHash4("sha256").update(sessionId).digest("hex").slice(0, 32);
+  return path9.join(dir, `${app}--${session}.json`);
 }
 function writeAtomic(dir, file, value, sequence) {
   fs7.mkdirSync(dir, { recursive: true, mode: 448 });
@@ -6939,7 +7412,7 @@ function writeAtomic(dir, file, value, sequence) {
   }
 }
 var BoardStore = class {
-  constructor(dir = path8.join(dshHome(), "dsh-ee", "boards")) {
+  constructor(dir = path9.join(dshHome(), "dsh-ee", "boards")) {
     this.dir = dir;
   }
   sequence = 0;
@@ -6964,7 +7437,7 @@ var BoardStore = class {
 };
 var maxChecked = 100;
 var ChecklistStore = class {
-  constructor(dir = path8.join(dshHome(), "dsh-ee", "checklists")) {
+  constructor(dir = path9.join(dshHome(), "dsh-ee", "checklists")) {
     this.dir = dir;
   }
   sequence = 0;
@@ -7097,13 +7570,13 @@ function registerWorkbenchTool(ctx, deps) {
 
 // src/local-mcp.ts
 import fs8 from "node:fs";
-import path9 from "node:path";
+import path10 from "node:path";
 var PACKAGE_RE = /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/;
 var VERSION_RE = /^[0-9A-Za-z][0-9A-Za-z.+_-]*$/;
 var EXTENSION_ID_RE = /^[a-z0-9][a-z0-9._-]{0,40}\/[a-z0-9][a-z0-9._-]{0,60}$/;
 var SERVER_NAME_RE = /^[A-Za-z0-9_-]{1,32}$/;
 function localMcpStorePath() {
-  return path9.join(dshHome(), "dsh-ee", "local-mcp.json");
+  return path10.join(dshHome(), "dsh-ee", "local-mcp.json");
 }
 function parsePackageSpec(raw) {
   const text = String(raw ?? "").trim();
@@ -7189,7 +7662,7 @@ function readLocalExtensions(file = localMcpStorePath()) {
   }
 }
 function writeLocalExtensions(extensions, file = localMcpStorePath()) {
-  fs8.mkdirSync(path9.dirname(file), { recursive: true, mode: 448 });
+  fs8.mkdirSync(path10.dirname(file), { recursive: true, mode: 448 });
   const tmp = `${file}.tmp`;
   fs8.writeFileSync(tmp, `${JSON.stringify({ version: 1, extensions }, null, 2)}
 `, { mode: 384 });
@@ -7482,7 +7955,7 @@ function registerLocalMcpCommand(ctx, local) {
 
 // src/mirrors.ts
 import fs9 from "node:fs";
-import path10 from "node:path";
+import path11 from "node:path";
 var xml = (value) => value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]);
 var DependencyMirrors = class {
   dir;
@@ -7490,7 +7963,7 @@ var DependencyMirrors = class {
   disposed = false;
   constructor(ctx) {
     const profile = ctx.get("profileContext")?.dir;
-    this.dir = path10.join(typeof profile === "string" && profile ? profile : dshHome(), "dsh-ee");
+    this.dir = path11.join(typeof profile === "string" && profile ? profile : dshHome(), "dsh-ee");
   }
   hosts() {
     return [...this.active].map(([kind, value]) => ({ kind, host: value.host }));
@@ -7499,7 +7972,7 @@ var DependencyMirrors = class {
     if (mirrors === void 0 || this.disposed) return;
     for (const kind of ["pypi", "maven"]) {
       const mirror = mirrors[kind];
-      const file = path10.join(this.dir, kind === "pypi" ? "pip.conf" : "settings.xml");
+      const file = path11.join(this.dir, kind === "pypi" ? "pip.conf" : "settings.xml");
       if (!mirror?.url) {
         fs9.rmSync(file, { force: true });
         this.restore(kind);
@@ -7584,6 +8057,7 @@ function apply(ctx, input) {
   ctx.effect(() => () => mirrors.dispose());
   const tokens = new TokenManager(ctx, config);
   const http = new HttpClient(tokens);
+  const desktopUpdate = new DesktopUpdateManager(config, http);
   const bridge = new McpBridge(ctx, config, http);
   const localMcp = createLocalMcp(ctx, config);
   const writes = new WriteLog();
@@ -7613,8 +8087,8 @@ function apply(ctx, input) {
     const appBindings = new AppBindings();
     const boards = new BoardStore();
     const checklists = new ChecklistStore();
-    registerDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors);
-    const skillsReady = registerSkills(ctx, config, http, mirrors).then((loaded) => {
+    registerDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors, desktopUpdate);
+    const skillsReady = registerSkills(ctx, config, http, mirrors, desktopUpdate).then((loaded) => {
       refreshSkills = loaded.refreshNow;
       return skills = loaded;
     });
@@ -7674,13 +8148,16 @@ function apply(ctx, input) {
         base: config.base,
         writes: writes.between(String(request?.sessionId ?? ""), Number(request?.from), request?.to == null ? void 0 : Number(request.to))
       }),
-      readOverview: () => readEnterpriseOverview(config, http, bridge).catch((error) => ({ failure: overviewFailure(config, error) })),
+      readOverview: () => readEnterpriseOverview(config, http, bridge, desktopUpdate).catch((error) => ({ failure: overviewFailure(config, error) })),
       login: () => commands.login(),
-      doctor: () => runLocalDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors),
+      doctor: () => runLocalDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors, desktopUpdate),
       serverSettings: async () => server.read(),
       testServer: (request) => server.test(request?.base),
       saveServer: (request) => server.save(request?.base),
       updatePlugin: () => updateConnect(ctx, config, http),
+      desktopUpdate: async () => desktopUpdate.status(),
+      downloadDesktopUpdate: () => desktopUpdate.download(),
+      openDesktopUpdate: () => desktopUpdate.openInstaller(),
       webLink: (request) => exchangeWebLink(config.base, http, String(request?.url ?? ""))
     });
     const disposeWorkbenchTool = registerWorkbenchTool(ctx, {

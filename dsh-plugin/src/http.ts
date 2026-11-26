@@ -1,9 +1,16 @@
 import type { TokenManager } from "./token.js";
+import { detectDesktopTarget } from "./desktop-update.js";
 
-export function dshHost(versions: Record<string, string | undefined> = process.versions as unknown as Record<string, string | undefined>): string {
+export function dshHost(
+  versions: Record<string, string | undefined> = process.versions as unknown as Record<string, string | undefined>,
+  platform: string = process.platform,
+  arch: string = process.arch,
+): string {
   const electron = versions.electron;
   if (!electron) return "cli";
-  return `desktop/${process.env.DSH_DESKTOP_VERSION || process.env.DSH_VERSION || electron}`;
+  const ver = process.env.DSH_DESKTOP_VERSION || process.env.DSH_VERSION || electron;
+  const target = detectDesktopTarget(platform, arch);
+  return target ? `desktop/${ver}/${target}` : `desktop/${ver}`;
 }
 
 export class HttpClient {

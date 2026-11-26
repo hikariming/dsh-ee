@@ -47,6 +47,9 @@ const clientRemote = createTypertRemoteInfo({
     "dshEE/testServer": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
     "dshEE/saveServer": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
     "dshEE/updatePlugin": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
+    "dshEE/desktopUpdate": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
+    "dshEE/downloadDesktopUpdate": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
+    "dshEE/openDesktopUpdate": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
     "dshEE/webLink": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
     "dshEE/insertFormRow": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
     "dshEE/writeTableRow": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => z.any() }, invocation: { kind: "direct" } },
@@ -236,7 +239,32 @@ export async function apply(ctx: any): Promise<void> {
         setDoctor(undefined);
         void state.refresh();
       };
-      return enterprisePanel(createElement, org, { ...state, notice, doctor }, { login: () => void login(), refresh, doctor: () => void diagnose() }, AppsPanel);
+      const downloadDesktopUpdate = async () => {
+        state.setBusy(true);
+        try {
+          unwrapRemote(await remote.downloadDesktopUpdate());
+          await state.refresh();
+        } catch (err) {
+          setNotice(err instanceof Error ? err.message : String(err));
+        } finally {
+          state.setBusy(false);
+        }
+      };
+      const openDesktopUpdate = async () => {
+        try {
+          const res = unwrapRemote(await remote.openDesktopUpdate());
+          if (res?.message) setNotice(res.message);
+        } catch (err) {
+          setNotice(err instanceof Error ? err.message : String(err));
+        }
+      };
+      return enterprisePanel(createElement, org, { ...state, notice, doctor }, {
+        login: () => void login(),
+        refresh,
+        doctor: () => void diagnose(),
+        downloadDesktopUpdate: () => void downloadDesktopUpdate(),
+        openDesktopUpdate: () => void openDesktopUpdate(),
+      }, AppsPanel);
     };
     const EnterpriseHeader = () => {
       const state = useOverview(remote);

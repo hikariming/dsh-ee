@@ -93,6 +93,7 @@ const (
 	auditDshReleaseImport       = "dsh_release.import"
 	auditDshReleaseMirror       = "dsh_release.mirror"
 	auditDshReleaseRecommend    = "dsh_release.recommend"
+	auditDshReleasePush         = "dsh_release.push"
 	auditDshReleaseDelete       = "dsh_release.delete"
 
 	// 刷新令牌（refresh.go）：轮换成功、检测到旧令牌复用（后者会吊销整族，高危）

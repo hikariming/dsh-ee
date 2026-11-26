@@ -53,6 +53,29 @@ export interface Plugin {
 
 export type DshTarget = "mac-arm64" | "mac-x64" | "win-x64";
 export type DshReleaseState = "available" | "downloading" | "mirrored" | "failed" | "removed";
+export type DshPushMode = "off" | "notify" | "auto_download";
+
+export interface DshFleetClient {
+  username: string;
+  department: string;
+  client_name: string;
+  last_client: string;
+  last_host: string;
+  host_kind: "desktop" | "cli" | "unknown";
+  version: string;
+  target: string;
+  recommended_version: string;
+  status: "up_to_date" | "outdated" | "unknown";
+  last_used_at: string;
+}
+
+export interface DshFleetResponse {
+  push_mode: DshPushMode;
+  push_note: string;
+  recommended: Record<string, string>;
+  summary: { total: number; up_to_date: number; outdated: number; unknown: number };
+  clients: DshFleetClient[];
+}
 
 export interface DshRelease {
   source?: "import" | "official";
@@ -117,6 +140,8 @@ export interface Settings {
     autoSync: "off" | "notify" | "mirror";
     keepVersions: number;
     offerDmg: boolean;
+    pushMode?: DshPushMode;
+    pushNote?: string;
   };
   brand: {
     enabled: boolean;

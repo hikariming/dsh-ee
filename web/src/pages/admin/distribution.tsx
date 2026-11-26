@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { RefreshCw, PackageOpen } from "lucide-react";
+import { RefreshCw, PackageOpen, Send, Laptop } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { api, formatBytes, formatTime } from "../../lib/api";
 import { useApi } from "../../lib/use-api";
 import { useStore } from "../../lib/store";
-import type { DshRelease, DshTarget } from "../../lib/types";
+import type { DshFleetClient, DshPushMode, DshRelease, DshTarget } from "../../lib/types";
 import { Badge, Button, Card, PageHeader, ToggleRow, Notice, Empty } from "../../components/ui";
 import { LoadState } from "../../components/api-ui";
 import { PageLink } from "../../lib/menus";
@@ -73,14 +73,42 @@ function ReleaseTable({ target, title, rows, busy, highlighted, act }: { target:
 
 export default function AdminDistribution() {
   const { t } = useTranslation();
-  const { settings, updateSettings, notify } = useStore();
+  const { settings, updateSettings, syncSettings, notify } = useStore();
   const { data, loading, error, reload } = useApi(api.adminDshReleases);
+  const fleet = useApi(api.adminDshReleaseClients);
   const [busy, setBusy] = useState(0);
   const [importOpen, setImportOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
   const [importNotice, setImportNotice] = useState("");
+  const [pushMode, setPushMode] = useState<DshPushMode>(settings.distribution.pushMode ?? "notify");
+  const [pushNote, setPushNote] = useState(settings.distribution.pushNote ?? "");
+  const [savingPush, setSavingPush] = useState(false);
   const rows = data ?? [];
   const downloading = rows.some((r) => (r.state ?? "available") === "downloading");
+
+  useEffect(() => {
+    setPushMode(settings.distribution.pushMode ?? "notify");
+    setPushNote(settings.distribution.pushNote ?? "");
+  }, [settings.distribution.pushMode, settings.distribution.pushNote]);
+
+  const savePush = async () => {
+    setSavingPush(true);
+    try {
+      const res = await api.updateDshReleasePush({ push_mode: pushMode, push_note: pushNote.trim() });
+      setPushMode(res.push_mode);
+      setPushNote(res.push_note);
+      syncSettings((s) => ({
+        ...s,
+        distribution: { ...s.distribution, pushMode: res.push_mode, pushNote: res.push_note },
+      }));
+      notify(t("distributionAdmin.pushSaved"));
+      void fleet.reload();
+    } catch (e) {
+      notify(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSavingPush(false);
+    }
+  };
 
   useEffect(() => {
     if (!highlighted || !data?.some((r) => r.id === highlighted)) return;
@@ -103,6 +131,7 @@ export default function AdminDistribution() {
       if (action === "delete") await api.deleteDshRelease(id);
       notify(t(`distributionAdmin.done.${action}`));
       await reload();
+      if (action === "recommend") void fleet.reload();
     } catch (e) {
       notify(e instanceof Error ? e.message : String(e));
     } finally {
@@ -157,6 +186,46 @@ export default function AdminDistribution() {
           onChange={(v) => updateSettings((s) => ({ ...s, distribution: { ...s.distribution, offerDmg: v } }))}
         />
       </Card>
+      <Card className="mb-6 p-5">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-[15px] leading-6 font-semibold text-neutral-900">
+              <Send size={15} /> {t("distributionAdmin.pushTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-neutral-500">{t("distributionAdmin.pushDesc")}</p>
+          </div>
+          <Button size="sm" disabled={savingPush} onClick={() => void savePush()}>
+            {savingPush ? t("common.saving") : t("distributionAdmin.pushSave")}
+          </Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <label className="text-sm">
+            <span className="mb-1 block font-medium text-neutral-800">{t("distributionAdmin.pushModeLabel")}</span>
+            <select
+              aria-label={t("distributionAdmin.pushModeLabel")}
+              className="h-9 w-full rounded-md border border-neutral-300 bg-card px-3"
+              value={pushMode}
+              onChange={(e) => setPushMode(e.target.value as DshPushMode)}
+            >
+              <option value="off">{t("distributionAdmin.pushMode.off")}</option>
+              <option value="notify">{t("distributionAdmin.pushMode.notify")}</option>
+              <option value="auto_download">{t("distributionAdmin.pushMode.auto_download")}</option>
+            </select>
+          </label>
+          <label className="text-sm md:col-span-2">
+            <span className="mb-1 block font-medium text-neutral-800">{t("distributionAdmin.pushNoteLabel")}</span>
+            <input
+              aria-label={t("distributionAdmin.pushNoteLabel")}
+              type="text"
+              maxLength={200}
+              placeholder={t("distributionAdmin.pushNotePlaceholder")}
+              className="h-9 w-full rounded-md border border-neutral-300 bg-card px-3"
+              value={pushNote}
+              onChange={(e) => setPushNote(e.target.value)}
+            />
+          </label>
+        </div>
+      </Card>
       <LoadState loading={loading && !data} error={error} onRetry={reload}>
         <div className="space-y-6">
           <ReleaseTable target="mac-arm64" title={t("distributionAdmin.arm64")} rows={rows} busy={busy} highlighted={highlighted} act={run} />
@@ -164,6 +233,75 @@ export default function AdminDistribution() {
           <ReleaseTable target="win-x64" title={t("distributionAdmin.windows")} rows={rows} busy={busy} highlighted={highlighted} act={run} />
         </div>
       </LoadState>
+      <Card className="mt-6 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 px-5 py-3">
+          <div>
+            <div className="flex items-center gap-2 text-[15px] leading-6 font-semibold text-neutral-900">
+              <Laptop size={15} /> {t("distributionAdmin.fleetTitle")}
+            </div>
+            <div className="mt-0.5 text-xs text-neutral-500">{t("distributionAdmin.fleetDesc")}</div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {fleet.data && (
+              <>
+                <Badge tone="slate">{t("distributionAdmin.fleetSummaryTotal", { n: fleet.data.summary.total })}</Badge>
+                <Badge tone="green">{t("distributionAdmin.fleetSummaryUpToDate", { n: fleet.data.summary.up_to_date })}</Badge>
+                <Badge tone="amber">{t("distributionAdmin.fleetSummaryOutdated", { n: fleet.data.summary.outdated })}</Badge>
+                {fleet.data.summary.unknown > 0 && <Badge tone="slate">{t("distributionAdmin.fleetSummaryUnknown", { n: fleet.data.summary.unknown })}</Badge>}
+              </>
+            )}
+            <Button size="sm" variant="secondary" onClick={() => void fleet.reload()}>
+              <RefreshCw size={13} /> {t("distributionAdmin.fleetRefresh")}
+            </Button>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="tbl max-sm:min-w-[38rem]">
+            <thead>
+              <tr>
+                <th className="px-5 py-2">{t("distributionAdmin.fleetColUser")}</th>
+                <th className="px-5 py-2">{t("distributionAdmin.fleetColClient")}</th>
+                <th className="px-5 py-2">{t("distributionAdmin.fleetColVersion")}</th>
+                <th className="px-5 py-2">{t("distributionAdmin.fleetColRecommended")}</th>
+                <th className="px-5 py-2">{t("distributionAdmin.fleetColStatus")}</th>
+                <th className="px-5 py-2">{t("distributionAdmin.fleetColLastSeen")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100">
+              {(fleet.data?.clients ?? []).map((c: DshFleetClient, idx: number) => (
+                <tr key={`${c.username}-${c.client_name}-${idx}`}>
+                  <td className="px-5 py-3">
+                    <div className="font-medium text-neutral-800">{c.username}</div>
+                    {c.department && <div className="text-xs text-neutral-500">{c.department}</div>}
+                  </td>
+                  <td className="px-5 py-3 text-neutral-700">
+                    <div>{c.client_name || "DSH"}</div>
+                    {c.last_client && <div className="font-mono text-xs text-neutral-400">{c.last_client}</div>}
+                  </td>
+                  <td className="px-5 py-3 font-mono text-xs text-neutral-700">
+                    {c.host_kind === "desktop" ? (
+                      <>
+                        <div>{c.version || "—"}</div>
+                        {c.target && <div className="text-neutral-400">{c.target}</div>}
+                      </>
+                    ) : c.last_host || "—"}
+                  </td>
+                  <td className="px-5 py-3 font-mono text-xs text-neutral-600">{c.recommended_version || "—"}</td>
+                  <td className="px-5 py-3">
+                    <Badge tone={c.status === "up_to_date" ? "green" : c.status === "outdated" ? "amber" : "slate"}>
+                      {t(`distributionAdmin.fleetStatus.${c.status}`)}
+                    </Badge>
+                  </td>
+                  <td className="px-5 py-3 text-xs text-neutral-500">{formatTime(c.last_used_at)}</td>
+                </tr>
+              ))}
+              {!fleet.loading && !(fleet.data?.clients?.length) && (
+                <tr><td colSpan={6}><div className="tbl-empty"><Empty compact icon={Laptop}>{t("distributionAdmin.fleetEmpty")}</Empty></div></td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
       {importOpen && <ImportReleaseDialog releases={rows} onClose={() => setImportOpen(false)} onSuccess={(release) => {
         setImportOpen(false);
         const message = t("distributionAdmin.importSuccess", { platform: t(`download.target.${release.target}`), version: release.version });

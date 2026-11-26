@@ -9,6 +9,7 @@ export default {
     "title": "DSH Desktop डाउनलोड करें",
     desc: "कंपनी नेटवर्क से व्यवस्थापक द्वारा उपलब्ध DSH डेस्कटॉप इंस्टॉलर डाउनलोड करें। हर फ़ाइल की सत्यापन स्थिति देखें।",
     "recommended": "कंपनी अनुशंसित",
+    "pushNoticeTitle": "प्रशासक अपग्रेड सूचना: ",
     "stepDownload": "① DSH Desktop डाउनलोड करें",
     "unzip": "डाउनलोड के बाद zip खोलें और DeepSeek Harness को “Applications” में खींचें।",
     "chooseChip": "यदि Safari चिप स्वतः नहीं पहचान पाता, तो  → About This Mac → Chip देखकर उपयुक्त इंस्टॉलर चुनें।",

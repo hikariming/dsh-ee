@@ -199,8 +199,9 @@ type dshCatalog struct {
 	Required   []dshPlugin   `json:"required_plugins"`
 	Revision   string        `json:"revision"`
 	// 企业连接在 DSH 里的工具前缀（mcp__<server_name>__）
-	ServerName string   `json:"server_name"`
-	Brand      dshBrand `json:"brand"`
+	ServerName    string            `json:"server_name"`
+	Brand         dshBrand          `json:"brand"`
+	DesktopUpdate *dshDesktopUpdate `json:"desktop_update,omitempty"`
 
 	assets map[string]*store.Asset
 	specs  map[string]*assetSpec
@@ -405,6 +406,11 @@ func (s *Server) userCatalog(ctx context.Context, v viewer) (*dshCatalog, error)
 		return nil, err
 	}
 	c.Brand = brand
+	desktopUpdate, err := s.desktopUpdateCatalog(ctx, set, "")
+	if err != nil {
+		return nil, err
+	}
+	c.DesktopUpdate = desktopUpdate
 	// 修订号：目录里任何会影响 DSH 的东西变了，它就变
 	h := sha256.New()
 	c.mirrorSettings = set.Mirrors
@@ -418,6 +424,7 @@ func (s *Server) userCatalog(ctx context.Context, v viewer) (*dshCatalog, error)
 	_ = json.NewEncoder(h).Encode(c.Connections)
 	_ = json.NewEncoder(h).Encode(c.Categories)
 	_ = json.NewEncoder(h).Encode(c.Brand)
+	_ = json.NewEncoder(h).Encode(c.DesktopUpdate)
 	for _, name := range slices.Sorted(maps.Keys(c.system)) {
 		fmt.Fprintf(h, "sys:%s:%s;", name, c.system[name])
 	}
@@ -467,6 +474,11 @@ func (s *Server) handleDshCatalog(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.internalErr(w, r, err)
 		return
+	}
+	if set, err := s.appSettings(r.Context()); err == nil {
+		if du, err := s.desktopUpdateCatalog(r.Context(), set, s.publicBase(r)); err == nil {
+			c.DesktopUpdate = du
+		}
 	}
 	mirrors, err := s.dependencyMirrors(c.mirrorSettings)
 	if err != nil {

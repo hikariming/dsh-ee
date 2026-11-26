@@ -326,6 +326,16 @@ func validateSettings(v *store.AppSettings) string {
 	if v.Distribution.KeepVersions < 1 || v.Distribution.KeepVersions > 10 {
 		return "Desktop 保留版本数应在 1–10 之间"
 	}
+	if v.Distribution.PushMode == "" {
+		v.Distribution.PushMode = "notify"
+	}
+	if !slices.Contains([]string{"off", "notify", "auto_download"}, v.Distribution.PushMode) {
+		return "Desktop 版本推送模式取值不对：" + v.Distribution.PushMode
+	}
+	v.Distribution.PushNote = strings.TrimSpace(v.Distribution.PushNote)
+	if len([]rune(v.Distribution.PushNote)) > 200 {
+		return "Desktop 升级说明不能超过 200 个字符"
+	}
 	v.Brand.Name = strings.TrimSpace(v.Brand.Name)
 	nameLen := len([]rune(v.Brand.Name))
 	if v.Brand.Enabled && nameLen == 0 {

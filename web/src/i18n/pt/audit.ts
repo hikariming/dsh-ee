@@ -192,6 +192,7 @@ export default {
         mirror: "Baixar pacote de instalação",
         mirror_failed: "Falha na verificação do pacote de instalação",
         recommend: "Definir versão recomendada",
+        push: "Atualizou a política de envio",
         delete: "Excluir pacote de instalação local",
       },
       brand: {
