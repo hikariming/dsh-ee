@@ -245,7 +245,7 @@ export class DesktopUpdateManager {
       targetDir = await mkdtemp(path.join(os.tmpdir(), "dsh-ee-updates-"));
     }
     const finalPath = await resolveNonOverwritingPath(targetDir, fileName);
-    const partPath = path.join(targetDir, `.${fileName}.${randomUUID()}.part`);
+    const partPath = path.join(targetDir, `.dsh-${randomUUID()}.part`);
     try {
       const dlPath = `/dl/${encodeURIComponent(rel.target)}/${encodeURIComponent(rel.file)}`;
       const response = await this.http.fetch(dlPath, {}, 0);
