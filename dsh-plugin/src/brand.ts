@@ -26,6 +26,9 @@ export interface ClientServiceActions {
   testServer: (request: { base?: string }) => Promise<any>;
   saveServer: (request: { base?: string | null }) => Promise<any>;
   updatePlugin: () => Promise<any>;
+  desktopUpdate: () => Promise<any>;
+  downloadDesktopUpdate: () => Promise<any>;
+  openDesktopUpdate: () => Promise<any>;
   webLink: (request: { url?: string }) => Promise<string>;
   insertFormRow: (request: { app: string; pane: string; widget: number; values?: Record<string, unknown> }) => Promise<any>;
   writeTableRow: (request: { app: string; pane: string; widget: number; action: number; id: number }) => Promise<any>;
@@ -150,6 +153,21 @@ export class DshEEClientService extends TypertRemoteService {
   @Remote
   async updatePlugin(): Promise<any> {
     return this.actions.updatePlugin();
+  }
+
+  @Remote
+  async desktopUpdate(): Promise<any> {
+    return this.actions.desktopUpdate();
+  }
+
+  @Remote
+  async downloadDesktopUpdate(): Promise<any> {
+    return this.actions.downloadDesktopUpdate();
+  }
+
+  @Remote
+  async openDesktopUpdate(): Promise<any> {
+    return this.actions.openDesktopUpdate();
   }
 
   @Remote

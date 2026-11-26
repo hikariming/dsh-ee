@@ -7,6 +7,7 @@ export default {
     title: "下载 DSH Desktop",
     desc: "从企业内网下载管理员提供的 DSH 桌面版安装包；请查看各文件的校验状态。",
     recommended: "企业推荐",
+    pushNoticeTitle: "管理员升级通知：",
     stepDownload: "① 下载 DSH Desktop",
     unzip: "下载后解压 zip，把 DeepSeek Harness 拖进「应用程序」。",
     chooseChip: "Safari 无法自动判断芯片时，请点  → 关于本机 → 芯片查看，再选择对应安装包。",

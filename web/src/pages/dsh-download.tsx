@@ -6,7 +6,7 @@ import { api, formatBytes, formatTime } from "../lib/api";
 import { useApi } from "../lib/use-api";
 import { useStore } from "../lib/store";
 import type { DshClient, DshRelease, DshTarget } from "../lib/types";
-import { Badge, Card, CopyBox, PageHeader, Empty, buttonCls } from "../components/ui";
+import { Badge, Card, CopyBox, Notice, PageHeader, Empty, buttonCls } from "../components/ui";
 import { LoadState } from "../components/api-ui";
 import { PageLink } from "../lib/menus";
 import { PublicUrlNotice } from "../components/public-url-notice";
@@ -113,6 +113,12 @@ export default function DshDownload() {
   return (
     <div>
       <PageHeader title={t("download.title")} desc={t("download.desc")} />
+      {data?.push_mode !== "off" && data?.push_note && (
+        <Notice className="mb-6">
+          <span className="font-medium">{t("download.pushNoticeTitle")}</span>
+          {data.push_note}
+        </Notice>
+      )}
       <PublicUrlNotice info={ci} className="mb-6" />
       <LoadState loading={loading && !data} error={error} onRetry={reload}>
         <div className="space-y-6">

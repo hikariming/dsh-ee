@@ -211,6 +211,18 @@ func (s *Store) ListActiveDshClients(ctx context.Context, userID int64, since ti
 	return out, rows.Err()
 }
 
+func (s *Store) ListAllDshClients(ctx context.Context, since time.Time) ([]*AccessToken, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT `+accessTokenColumns+`, u.username, u.department, u.account_type
+		FROM access_tokens t JOIN users u ON u.id = t.user_id
+		WHERE t.revoked_at IS NULL AND t.last_used_at >= ? AND t.last_client LIKE 'dsh-connect/%'
+		ORDER BY t.last_used_at DESC LIMIT 500`, since)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanAccessTokens(rows)
+}
+
 func (s *Store) ListUserTokens(ctx context.Context, userID int64) ([]*AccessToken, error) {
 	rows, err := s.db.QueryContext(ctx,
 		`SELECT `+accessTokenColumns+`, u.username, u.department, u.account_type

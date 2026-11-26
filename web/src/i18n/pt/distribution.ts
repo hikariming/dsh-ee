@@ -9,6 +9,7 @@ export default {
     title: "Baixar o DSH Desktop",
     desc: "Baixe instaladores DSH fornecidos pelo administrador pela rede da empresa. Confira a verificação de cada arquivo.",
     recommended: "Recomendado pela empresa",
+    pushNoticeTitle: "Aviso de atualização do administrador: ",
     stepDownload: "① Baixar o DSH Desktop",
     unzip: "Depois de baixar, descompacte o zip e arraste o DeepSeek Harness para «Aplicativos».",
     chooseChip: "Se o Safari não conseguir identificar o chip automaticamente, clique em  → Sobre este Mac → Chip e escolha o pacote correspondente.",

@@ -1,6 +1,7 @@
 import type { McpBridge } from "./bridge.js";
 import type { PluginConfig } from "./dsh.js";
 import type { HttpClient } from "./http.js";
+import type { DesktopUpdateManager, DesktopUpdateStatus } from "./desktop-update.js";
 import { t } from "./i18n/index.js";
 
 export interface WhoamiViewData {
@@ -31,6 +32,7 @@ export interface EnterpriseOverview {
   default_model?: string;
   version: string;
   latest_version?: string;
+  desktop_update?: DesktopUpdateStatus;
 }
 
 /** 读不到企业账号的原因，面板据此提示是该登录还是该查网络或访问地址。 */
@@ -58,7 +60,7 @@ async function bridgeJson(bridge: McpBridge, name: string, args: unknown): Promi
   return JSON.parse(text);
 }
 
-export async function readEnterpriseOverview(config: PluginConfig, http: HttpClient, bridge: McpBridge): Promise<EnterpriseOverview> {
+export async function readEnterpriseOverview(config: PluginConfig, http: HttpClient, bridge: McpBridge, desktopUpdate?: DesktopUpdateManager): Promise<EnterpriseOverview> {
   const me = await http.json<WhoamiViewData>("/api/dsh/whoami");
   const [usage, modelList, doctor] = await Promise.all([
     bridgeJson(bridge, "ee_me", { action: "usage" }).catch(() => undefined),
@@ -72,5 +74,6 @@ export async function readEnterpriseOverview(config: PluginConfig, http: HttpCli
     default_model: doctor?.default_model,
     version: config.version,
     latest_version: doctor?.connect_version,
+    desktop_update: desktopUpdate?.status(),
   };
 }

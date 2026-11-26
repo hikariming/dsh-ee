@@ -1,5 +1,6 @@
 import { readSidebarMode, setSidebarMode, subscribeSidebarMode, type SidebarAppsMode } from "./sidebar-pref.js";
 import type { ConnectUpdate } from "./connect-update.js";
+import type { DesktopUpdateStatus } from "./desktop-update.js";
 import type { ServerSettings, ServerTest } from "./server-settings.js";
 import { t } from "./i18n/index.js";
 
@@ -10,9 +11,11 @@ export const settingsSectionId = "dsh-ee";
 export interface ServerSettingsState {
   settings?: ServerSettings;
   draft: string;
-  busy?: "test" | "save" | "update";
+  busy?: "test" | "save" | "update" | "desktop";
   test?: ServerTest;
   update?: ConnectUpdate;
+  desktopUpdate?: DesktopUpdateStatus;
+  desktopMessage?: string;
   notice?: string;
   error?: string;
 }
@@ -23,6 +26,8 @@ export interface ServerSettingsActions {
   save: () => void;
   reset: () => void;
   update: () => void;
+  downloadDesktop?: () => void;
+  openDesktop?: () => void;
 }
 
 const muted = { opacity: 0.65 };
@@ -88,6 +93,28 @@ export function serverSettingsView(createElement: (...args: any[]) => any, state
       button(createElement, busy === "update" ? t("settingsView.updating") : t("settingsView.updateLatest"), actions.update, !!busy)),
     state.update ? createElement("p", { "data-dsh-ee-update": state.update.ok ? "ok" : "fail", style: { margin: "8px 0 0", fontSize: 12, lineHeight: 1.6, color: state.update.ok ? "inherit" : "#d92d20" } }, state.update.message) : null,
     createElement("p", { style: { margin: "6px 0 0", fontSize: 12, lineHeight: 1.6, ...muted } }, t("settingsView.updateHint"))));
+  if (state.desktopUpdate) {
+    const du = state.desktopUpdate;
+    const pct = du.total > 0 ? Math.min(100, Math.round((du.downloaded / du.total) * 100)) : 0;
+    children.push(createElement("div", { key: "desktop", "data-dsh-ee-settings": "desktop-update", style: { marginTop: 20, paddingTop: 16, borderTop: "1px solid color-mix(in srgb, currentColor 14%, transparent)" } },
+      createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" } },
+        createElement("span", { style: { fontWeight: 500 } }, t("settingsView.desktopTitle")),
+        createElement("span", { style: { fontSize: 12, ...muted } },
+          du.updateAvailable && du.available ? t("settingsView.desktopRecommended", { version: du.available.version }) : t("settingsView.desktopUpToDate")),
+        du.updateAvailable && du.available
+          ? (du.downloadState === "ready" && actions.openDesktop
+            ? button(createElement, t("settingsView.desktopOpen"), actions.openDesktop, !!busy, true)
+            : actions.downloadDesktop
+              ? button(createElement, busy === "desktop" || du.downloadState === "downloading" ? t("settingsView.desktopDownloading", { percent: pct }) : t("settingsView.desktopDownload"), actions.downloadDesktop, !!busy || du.downloadState === "downloading", true)
+              : null)
+          : null,
+      ),
+      du.note ? createElement("p", { style: { margin: "6px 0 0", fontSize: 12, lineHeight: 1.6 } }, du.note) : null,
+      du.downloadState === "ready" && du.localPath ? createElement("p", { style: { margin: "6px 0 0", fontSize: 12, color: "#16a34a", overflowWrap: "anywhere" } }, t("settingsView.desktopReady", { path: du.localPath })) : null,
+      du.downloadState === "error" && du.error ? createElement("p", { style: { margin: "6px 0 0", fontSize: 12, color: "#d92d20", overflowWrap: "anywhere" } }, t("settingsView.desktopFailed", { error: du.error })) : null,
+      state.desktopMessage ? createElement("p", { style: { margin: "6px 0 0", fontSize: 12, lineHeight: 1.6 } }, state.desktopMessage) : null,
+    ));
+  }
   children.push(createElement("p", { key: "hint", style: { marginTop: 22, fontSize: 12, lineHeight: 1.6, ...muted } },
     t("settingsView.changeHint")));
   return createElement("div", { "data-dsh-ee-settings": "ready", style: { maxWidth: 640 } }, ...children);
@@ -122,6 +149,13 @@ export function registerServerSettings(ctx: any, deps: {
         try {
           const settings = unwrapRemote(await remote.serverSettings()) as ServerSettings;
           patch({ settings, draft: settings.base });
+          if (remote.desktopUpdate) {
+            try {
+              patch({ desktopUpdate: unwrapRemote(await remote.desktopUpdate()) });
+            } catch {
+              // ignore on older server
+            }
+          }
         } catch (error) {
           patch({ error: t("settingsView.readFailed", { error: message(error) }) });
         }
@@ -159,6 +193,25 @@ export function registerServerSettings(ctx: any, deps: {
         patch({ busy: undefined });
       }
     };
+    const downloadDesktop = async () => {
+      patch({ busy: "desktop", desktopMessage: undefined });
+      try {
+        const du = unwrapRemote(await remote.downloadDesktopUpdate()) as DesktopUpdateStatus;
+        patch({ desktopUpdate: du });
+      } catch (error) {
+        patch({ desktopMessage: t("settingsView.desktopFailed", { error: message(error) }) });
+      } finally {
+        patch({ busy: undefined });
+      }
+    };
+    const openDesktop = async () => {
+      try {
+        const res = unwrapRemote(await remote.openDesktopUpdate());
+        if (res?.message) patch({ desktopMessage: res.message });
+      } catch (error) {
+        patch({ desktopMessage: message(error) });
+      }
+    };
     const [mode, setMode] = useState<SidebarAppsMode>(readSidebarMode());
     useEffect(() => subscribeSidebarMode(() => setMode(readSidebarMode())), []);
     return createElement("div", null,
@@ -168,6 +221,8 @@ export function registerServerSettings(ctx: any, deps: {
         save: () => void save(state.draft),
         reset: () => void save(null),
         update: () => void update(),
+        downloadDesktop: () => void downloadDesktop(),
+        openDesktop: () => void openDesktop(),
       }),
       sidebarAppsToggle(createElement, mode, (shown) => setSidebarMode(shown ? "shown" : "hidden")));
   };

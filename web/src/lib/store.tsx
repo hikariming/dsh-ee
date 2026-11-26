@@ -35,6 +35,8 @@ export const defaultSettings: Settings = {
     autoSync: "notify",
     keepVersions: 3,
     offerDmg: false,
+    pushMode: "notify",
+    pushNote: "",
   },
   brand: {
     enabled: false,

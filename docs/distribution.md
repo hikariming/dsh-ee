@@ -144,6 +144,13 @@ DMG 另设一个 `kind = dmg` 的行：版本取下载时清单的 `version`，�
 - 令牌表记录 `last_client`、`last_host`、`last_seen_at`（复用 `LastUsedAt` 的写入逻辑，并限制写入频率）。
 - `GET /api/me/dsh-clients`：返回当前用户最近 10 分钟有活动的设备，供下载页第 ④ 步轮询（每 3 秒一次，最多 5 分钟）。
 
+### 6.4 员工机版本推送与版本分布
+
+- 管理员可在「DSH 分发」页配置员工机推送策略（`PUT /api/admin/dsh-releases/push`）：`off`（关闭）、`notify`（仅在 DSH 内提醒升级）、`auto_download`（自动后台下载并校验 SHA-512 后提示打开安装包），并可附带 200 字以内的升级说明。
+- `GET /api/dsh/catalog` 返回 `desktop_update`（含当前策略、升级说明及各平台设为「推荐」的已镜像版本，包括离线导入包），纳入目录 ETag。
+- `GET /dl/{target}/{file}` 同时支持员工浏览器会话与员工个人 Bearer 令牌，供 DSH 插件直接下载安装包并校验 SHA-512。
+- `GET /api/admin/dsh-releases/clients` 汇总近 30 天内活跃的员工客户端上报版本（`X-DshEE-Host: desktop/<ver>/<target>`），对照当前推荐版本展示「已是最新 / 待升级 / 未知」分布。
+
 ## 7. 前置验证（Mac，动手前做）
 
 在一台干净的 Mac 上，用独立的 `DSH_HOME`，装官方 0.2.1-rc.5 Desktop，逐项验证。用到的脚本放 `e2e/dsh/spikes/desktop/`。

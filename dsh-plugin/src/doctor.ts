@@ -7,6 +7,7 @@ import type { HttpClient } from "./http.js";
 import type { TokenManager } from "./token.js";
 import type { AppBindings } from "./app-bindings.js";
 import type { DependencyMirrors } from "./mirrors.js";
+import type { DesktopUpdateManager } from "./desktop-update.js";
 
 export interface Check {
   id: string;
@@ -34,7 +35,7 @@ export function compareVersions(a: string, b: string): number {
   return x.pre < y.pre ? -1 : 1;
 }
 
-export async function runLocalDoctor(ctx: DshContext, config: PluginConfig, tokens: TokenManager, http: HttpClient, bridge: McpBridge, bindings?: AppBindings, mirrors?: DependencyMirrors): Promise<{ summary: string; checks: Check[] }> {
+export async function runLocalDoctor(ctx: DshContext, config: PluginConfig, tokens: TokenManager, http: HttpClient, bridge: McpBridge, bindings?: AppBindings, mirrors?: DependencyMirrors, desktopUpdate?: DesktopUpdateManager): Promise<{ summary: string; checks: Check[] }> {
   const checks: Check[] = [];
   const add = (check: Check) => checks.push(check);
   for (const { kind, host } of mirrors?.hosts() ?? []) add({ id: `mirror.${kind}`, status: "ok", title: t(`doctor.mirror_${kind}`, { host }), detail: host });
@@ -128,6 +129,19 @@ export async function runLocalDoctor(ctx: DshContext, config: PluginConfig, toke
     }
   }
 
+  // DSH Desktop 版本推送检查
+  const du = desktopUpdate?.status();
+  if (du?.updateAvailable && du.available) {
+    add({
+      id: "desktop_version",
+      status: "warn",
+      title: du.currentVersion
+        ? t("doctor.desktopNewer", { latest: du.available.version, version: du.currentVersion })
+        : t("doctor.desktopRecommended", { latest: du.available.version }),
+      fix: du.downloadState === "ready" ? t("doctor.desktopReadyFix") : t("doctor.desktopUpdateFix"),
+    });
+  }
+
   // 桥
   add(bridge.status.error
     ? { id: "bridge", status: "fail", title: t("doctor.bridgeFailed"), detail: bridge.status.error, fix: t("doctor.bridgeFix") }
@@ -143,13 +157,13 @@ function summarize(checks: Check[]): string {
 }
 
 /** 注册本机只读工具 ee_local_doctor。修复交给模型用 DSH 自带的文件 / shell 工具做（有 DSH 自己的审批），这里不改任何文件。 */
-export function registerDoctor(ctx: DshContext, config: PluginConfig, tokens: TokenManager, http: HttpClient, bridge: McpBridge, bindings?: AppBindings, mirrors?: DependencyMirrors): void {
+export function registerDoctor(ctx: DshContext, config: PluginConfig, tokens: TokenManager, http: HttpClient, bridge: McpBridge, bindings?: AppBindings, mirrors?: DependencyMirrors, desktopUpdate?: DesktopUpdateManager): void {
   const dispose = ctx.tools.register({
     name: "ee_local_doctor",
     description: t("doctor.description"),
     parameters: { type: "object", properties: {} },
     output: { schema: {}, render: (_args: unknown, value: unknown) => [{ type: "text", text: JSON.stringify(value) }] },
-    execute: async () => runLocalDoctor(ctx, config, tokens, http, bridge, bindings, mirrors),
+    execute: async () => runLocalDoctor(ctx, config, tokens, http, bridge, bindings, mirrors, desktopUpdate),
   });
   ctx.effect(() => dispose);
 }

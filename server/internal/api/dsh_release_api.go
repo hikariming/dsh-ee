@@ -2,13 +2,16 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"mime"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -64,7 +67,16 @@ func (s *Server) handleDshReleases(w http.ResponseWriter, r *http.Request) {
 	if out == nil {
 		out = []map[string]any{}
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"enabled": set.Distribution.Enabled, "releases": out})
+	pushMode := set.Distribution.PushMode
+	if pushMode == "" {
+		pushMode = "notify"
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"enabled":   set.Distribution.Enabled,
+		"push_mode": pushMode,
+		"push_note": set.Distribution.PushNote,
+		"releases":  out,
+	})
 }
 
 func (s *Server) handleAdminDshReleases(w http.ResponseWriter, r *http.Request) {
@@ -157,8 +169,271 @@ func (s *Server) handleRecommendDshRelease(w http.ResponseWriter, r *http.Reques
 		}
 		return
 	}
+	s.hub.notify()
 	s.audit(r, auditDshReleaseRecommend, "dsh-release:"+r.PathValue("id"), nil)
 	writeJSON(w, http.StatusOK, map[string]bool{"ok": true})
+}
+
+type dshDesktopRelease struct {
+	ID          int64     `json:"id"`
+	Target      string    `json:"target"`
+	Kind        string    `json:"kind"`
+	Version     string    `json:"version"`
+	File        string    `json:"file"`
+	Size        int64     `json:"size"`
+	SHA512      string    `json:"sha512"`
+	Verified    bool      `json:"verified"`
+	Source      string    `json:"source"`
+	ReleasedAt  time.Time `json:"released_at"`
+	DownloadURL string    `json:"download_url"`
+}
+
+type dshDesktopUpdate struct {
+	Mode     string                       `json:"mode"`
+	Note     string                       `json:"note,omitempty"`
+	Releases map[string]dshDesktopRelease `json:"releases"`
+}
+
+func (s *Server) desktopUpdateCatalog(ctx context.Context, set *store.AppSettings, base string) (*dshDesktopUpdate, error) {
+	mode := set.Distribution.PushMode
+	if mode == "" {
+		mode = "notify"
+	}
+	out := &dshDesktopUpdate{
+		Mode:     mode,
+		Note:     set.Distribution.PushNote,
+		Releases: map[string]dshDesktopRelease{},
+	}
+	if !set.Distribution.Enabled || mode == "off" {
+		out.Mode = "off"
+		out.Note = ""
+		return out, nil
+	}
+	items, err := s.store.ListDshReleases(ctx, "")
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range items {
+		if !item.Recommended || item.State != store.ReleaseMirrored {
+			continue
+		}
+		if _, exists := out.Releases[item.Target]; exists {
+			continue
+		}
+		source := "official"
+		if item.UpstreamURL == "" {
+			source = "import"
+		}
+		dl := "/dl/" + item.Target + "/" + url.PathEscape(item.File)
+		if base != "" {
+			dl = base + dl
+		}
+		out.Releases[item.Target] = dshDesktopRelease{
+			ID:          item.ID,
+			Target:      item.Target,
+			Kind:        item.Kind,
+			Version:     item.Version,
+			File:        item.File,
+			Size:        item.Size,
+			SHA512:      item.SHA512,
+			Verified:    dshReleaseVerified(item),
+			Source:      source,
+			ReleasedAt:  item.ReleasedAt,
+			DownloadURL: dl,
+		}
+	}
+	return out, nil
+}
+
+func (s *Server) handleUpdateDshReleasePush(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		PushMode string `json:"push_mode"`
+		PushNote string `json:"push_note"`
+	}
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 16<<10)).Decode(&body); err != nil {
+		writeErr(w, http.StatusBadRequest, "请求内容格式不对")
+		return
+	}
+	mode := strings.TrimSpace(body.PushMode)
+	if !slices.Contains([]string{"off", "notify", "auto_download"}, mode) {
+		writeErr(w, http.StatusBadRequest, "Desktop 版本推送模式取值不对："+mode)
+		return
+	}
+	note := strings.TrimSpace(body.PushNote)
+	if len([]rune(note)) > 200 {
+		writeErr(w, http.StatusBadRequest, "Desktop 升级说明不能超过 200 个字符")
+		return
+	}
+	cur, err := s.appSettings(r.Context())
+	if err != nil {
+		s.internalErr(w, r, err)
+		return
+	}
+	next := *cur
+	next.Distribution.PushMode = mode
+	next.Distribution.PushNote = note
+	if err := s.store.SaveSettings(r.Context(), &next, currentUser(r).ID); err != nil {
+		s.internalErr(w, r, err)
+		return
+	}
+	s.settings.mu.Lock()
+	s.settings.v = nil
+	s.settings.mu.Unlock()
+	s.hub.notify()
+	s.audit(r, auditDshReleasePush, mode, map[string]any{"push_mode": mode, "push_note": note})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "push_mode": mode, "push_note": note})
+}
+
+func parseDshHost(raw string) (kind, version, target string) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return "unknown", "", ""
+	}
+	if raw == "cli" {
+		return "cli", "", ""
+	}
+	if rest, ok := strings.CutPrefix(raw, "desktop/"); ok {
+		parts := strings.Split(rest, "/")
+		version = strings.TrimSpace(parts[0])
+		if len(parts) >= 2 {
+			t := strings.TrimSpace(parts[1])
+			if t == "mac-arm64" || t == "mac-x64" || t == "win-x64" {
+				target = t
+			}
+		}
+		return "desktop", version, target
+	}
+	return "unknown", "", ""
+}
+
+func compareReleaseVersion(a, b string) int {
+	parse := func(v string) ([]int, string) {
+		v = strings.TrimPrefix(strings.TrimSpace(v), "v")
+		core, pre, _ := strings.Cut(v, "-")
+		segs := strings.Split(core, ".")
+		nums := make([]int, len(segs))
+		for i, seg := range segs {
+			n, _ := strconv.Atoi(seg)
+			nums[i] = n
+		}
+		return nums, pre
+	}
+	an, ap := parse(a)
+	bn, bp := parse(b)
+	n := len(an)
+	if len(bn) > n {
+		n = len(bn)
+	}
+	for i := 0; i < n; i++ {
+		var av, bv int
+		if i < len(an) {
+			av = an[i]
+		}
+		if i < len(bn) {
+			bv = bn[i]
+		}
+		if av != bv {
+			if av < bv {
+				return -1
+			}
+			return 1
+		}
+	}
+	if ap == bp {
+		return 0
+	}
+	if ap == "" {
+		return 1
+	}
+	if bp == "" {
+		return -1
+	}
+	if ap < bp {
+		return -1
+	}
+	return 1
+}
+
+func (s *Server) handleAdminDshReleaseClients(w http.ResponseWriter, r *http.Request) {
+	items, err := s.store.ListAllDshClients(r.Context(), time.Now().Add(-30*24*time.Hour))
+	if err != nil {
+		s.internalErr(w, r, err)
+		return
+	}
+	releases, err := s.store.ListDshReleases(r.Context(), "")
+	if err != nil {
+		s.internalErr(w, r, err)
+		return
+	}
+	recommended := map[string]string{}
+	uniqueVersions := map[string]bool{}
+	for _, rel := range releases {
+		if rel.Recommended && rel.State == store.ReleaseMirrored {
+			if _, ok := recommended[rel.Target]; !ok {
+				recommended[rel.Target] = rel.Version
+				uniqueVersions[rel.Version] = true
+			}
+		}
+	}
+	fallbackVersion := ""
+	if len(uniqueVersions) == 1 {
+		for v := range uniqueVersions {
+			fallbackVersion = v
+		}
+	}
+
+	type fleetClient struct {
+		Username           string     `json:"username"`
+		Department         string     `json:"department"`
+		ClientName         string     `json:"client_name"`
+		LastClient         string     `json:"last_client"`
+		LastHost           string     `json:"last_host"`
+		HostKind           string     `json:"host_kind"`
+		Version            string     `json:"version"`
+		Target             string     `json:"target"`
+		RecommendedVersion string     `json:"recommended_version"`
+		Status             string     `json:"status"`
+		LastUsedAt         *time.Time `json:"last_used_at"`
+	}
+	out := make([]fleetClient, 0, len(items))
+	summary := map[string]int{"total": 0, "up_to_date": 0, "outdated": 0, "unknown": 0}
+	for _, item := range items {
+		kind, ver, target := parseDshHost(item.LastHost)
+		rec := ""
+		if target != "" {
+			rec = recommended[target]
+		} else if kind == "desktop" {
+			rec = fallbackVersion
+		}
+		status := "unknown"
+		if kind == "desktop" && ver != "" && rec != "" {
+			if compareReleaseVersion(ver, rec) >= 0 {
+				status = "up_to_date"
+			} else {
+				status = "outdated"
+			}
+		}
+		summary["total"]++
+		summary[status]++
+		out = append(out, fleetClient{
+			Username:           item.Username,
+			Department:         item.Department,
+			ClientName:         item.ClientName,
+			LastClient:         item.LastClient,
+			LastHost:           item.LastHost,
+			HostKind:           kind,
+			Version:            ver,
+			Target:             target,
+			RecommendedVersion: rec,
+			Status:             status,
+			LastUsedAt:         item.LastUsedAt,
+		})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"summary":     summary,
+		"recommended": recommended,
+		"clients":     out,
+	})
 }
 
 func (s *Server) handleDeleteDshRelease(w http.ResponseWriter, r *http.Request) {

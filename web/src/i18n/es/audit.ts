@@ -192,6 +192,7 @@ export default {
         "mirror": "Descargó el instalador",
         "mirror_failed": "Error de verificación del instalador",
         "recommend": "Estableció la versión recomendada",
+        "push": "Actualizó la política de envío",
         "delete": "Eliminó el instalador local"
       },
       "brand": {

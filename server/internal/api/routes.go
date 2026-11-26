@@ -439,7 +439,7 @@ func (s *Server) routes() []route {
 		pub("POST /api/dsh/connections/{name}/subscription", s.handleDshConnectionSubscription),
 		pub("DELETE /api/dsh/connections/{name}/subscription", s.handleDshConnectionSubscription),
 		prm("GET /api/dsh/releases", s.handleDshReleases, rbac.PortalView),
-		prm("GET /dl/{target}/{file}", s.handleDownloadDshRelease, rbac.PortalView),
+		prmt("GET /dl/{target}/{file}", s.handleDownloadDshRelease, rbac.PortalView),
 		pub("GET /dl/connect/{file}", s.handleConnectTarball),
 		// DSH 分发页的操作权限：settings.manage 是旧行为，distribution.manage 是该页菜单对应的
 		// 权限点；两者任一即可，只给「管理 DSH 分发」的角色不再看到页面却处处 403。
@@ -448,6 +448,8 @@ func (s *Server) routes() []route {
 		prm("POST /api/admin/dsh-releases/check", s.handleCheckDshReleases, rbac.SettingsManage, rbac.DistributionManage),
 		prm("POST /api/admin/dsh-releases/{id}/mirror", s.handleMirrorDshRelease, rbac.SettingsManage, rbac.DistributionManage),
 		prm("POST /api/admin/dsh-releases/{id}/recommend", s.handleRecommendDshRelease, rbac.SettingsManage, rbac.DistributionManage),
+		prm("PUT /api/admin/dsh-releases/push", s.handleUpdateDshReleasePush, rbac.SettingsManage, rbac.DistributionManage),
+		prm("GET /api/admin/dsh-releases/clients", s.handleAdminDshReleaseClients, rbac.SettingsManage, rbac.DistributionManage),
 		prm("DELETE /api/admin/dsh-releases/{id}", s.handleDeleteDshRelease, rbac.SettingsManage, rbac.DistributionManage),
 		pub("/mcp", s.handleMCP),
 

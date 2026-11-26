@@ -51,6 +51,8 @@ type AppSettings struct {
 		AutoSync              string `json:"autoSync"`
 		KeepVersions          int    `json:"keepVersions"`
 		OfferDmg              bool   `json:"offerDmg"`
+		PushMode              string `json:"pushMode"`
+		PushNote              string `json:"pushNote"`
 		AllowAlpha            bool   `json:"allowAlpha"`
 		AllowCommunityDesktop bool   `json:"allowCommunityDesktop"`
 	} `json:"distribution"`
@@ -179,6 +181,7 @@ func DefaultSettings() *AppSettings {
 	s.Distribution.Enabled = true
 	s.Distribution.AutoSync = "notify"
 	s.Distribution.KeepVersions = 3
+	s.Distribution.PushMode = "notify"
 	s.Distribution.AllowCommunityDesktop = true
 	// 企业目录：自动升级默认关闭，本期也不会执行（只存 / 只读展示）
 	s.Directory.AutoUpgrade = false

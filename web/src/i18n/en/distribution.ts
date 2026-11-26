@@ -9,6 +9,7 @@ export default {
     title: "Download DSH Desktop",
     desc: "Download DSH desktop installers provided by your administrator from the company network. Check the verification status of each file.",
     recommended: "Recommended",
+    pushNoticeTitle: "Administrator upgrade notice: ",
     stepDownload: "① Download DSH Desktop",
     unzip: "Unzip the download and drag DeepSeek Harness into Applications.",
     chooseChip: "If Safari cannot detect your chip, open  → About This Mac → Chip and choose the matching installer.",

@@ -21,6 +21,8 @@ export interface EnterprisePanelActions {
   login: () => void;
   refresh: () => void;
   doctor: () => void;
+  downloadDesktopUpdate?: () => void;
+  openDesktopUpdate?: () => void;
 }
 
 export interface QuotaViewData {
@@ -112,6 +114,38 @@ export function enterprisePanel(createElement: (...args: any[]) => any, org: str
         createElement("dd", { key: `${label}-value`, style: { margin: 0 } }, value),
       ]),
     ));
+    const du = data.desktop_update;
+    const avail = du?.available;
+    if (du?.updateAvailable && avail) {
+      const pct = du.total > 0 ? Math.min(100, Math.round((du.downloaded / du.total) * 100)) : 0;
+      const updateNodes: any[] = [
+        createElement("div", { style: { fontWeight: 500, lineHeight: 1.5 } },
+          t("statusView.desktopUpdateVersion", { version: avail.version }) +
+          (du.currentVersion ? t("statusView.desktopUpdateCurrent", { version: du.currentVersion }) : ""),
+        ),
+      ];
+      if (du.note) {
+        updateNodes.push(createElement("div", { style: { marginTop: 4, opacity: 0.85, lineHeight: 1.5 } }, du.note));
+      }
+      if (du.downloadState === "downloading") {
+        updateNodes.push(createElement("div", { style: { marginTop: 6, fontSize: 12, opacity: 0.75 } }, t("statusView.desktopUpdateDownloading", { percent: pct })));
+      } else if (du.downloadState === "ready" && du.localPath) {
+        updateNodes.push(createElement("div", { style: { marginTop: 6, fontSize: 12, color: "#16a34a", overflowWrap: "anywhere" } }, t("statusView.desktopUpdateReady", { path: du.localPath })));
+      } else if (du.downloadState === "error" && du.error) {
+        updateNodes.push(createElement("div", { style: { marginTop: 6, fontSize: 12, color: "#d92d20", overflowWrap: "anywhere" } }, t("statusView.desktopUpdateFailed", { error: du.error })));
+      }
+      const btnRow: any[] = [];
+      if (du.downloadState === "ready" && actions.openDesktopUpdate) {
+        btnRow.push(button(createElement, t("statusView.desktopUpdateOpen"), actions.openDesktopUpdate, busy));
+      } else if (actions.downloadDesktopUpdate) {
+        btnRow.push(button(createElement, du.downloadState === "downloading" ? t("statusView.desktopUpdateDownloading", { percent: pct }) : t("statusView.desktopUpdateDownload"), actions.downloadDesktopUpdate, busy || du.downloadState === "downloading"));
+      }
+      if (btnRow.length) {
+        updateNodes.push(createElement("div", { style: { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } }, ...btnRow));
+      }
+      updateNodes.push(createElement("div", { style: { marginTop: 6, fontSize: 12, opacity: 0.65, lineHeight: 1.5 } }, t("statusView.desktopUpdateHint")));
+      children.push(section(createElement, t("statusView.desktopUpdateTitle"), ...updateNodes));
+    }
     if (AppsPanel) children.push(createElement(AppsPanel, { key: "apps" }));
     children.push(section(createElement, t("statusView.quota"),
       quota === undefined ? t("statusView.quotaUnavailable") : quota === null ? t("statusView.quotaUnlimited") : createElement("div", {},
@@ -152,7 +186,8 @@ export function enterprisePanel(createElement: (...args: any[]) => any, org: str
 export function enterpriseHeader(createElement: (...args: any[]) => any, data: EnterpriseOverview | undefined, failed: boolean, onClick: () => void) {
   const me = data?.me;
   const quota = effectiveQuota(data?.usage);
-  const label = !me ? failed ? t("statusView.headerDisconnected") : t("statusView.headerChecking") : me.admin_live ? t("statusView.headerAdmin", { remaining: adminRemaining(me) }) : quota ? t("statusView.headerQuota", { percent: quota.remainingPercent }) : t("statusView.headerUser", { username: me.username });
+  const baseLabel = !me ? failed ? t("statusView.headerDisconnected") : t("statusView.headerChecking") : me.admin_live ? t("statusView.headerAdmin", { remaining: adminRemaining(me) }) : quota ? t("statusView.headerQuota", { percent: quota.remainingPercent }) : t("statusView.headerUser", { username: me.username });
+  const label = me && data?.desktop_update?.updateAvailable ? baseLabel + t("statusView.headerUpdateSuffix") : baseLabel;
   return createElement("button", {
     type: "button",
     onClick,

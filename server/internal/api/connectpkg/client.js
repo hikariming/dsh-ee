@@ -152,6 +152,10 @@ var zh = {
     pluginNewer: "接入插件有新版本 {{latest}}（当前 {{version}}）",
     updateFix: "在 DSH 的「设置 → dsh-ee」点「更新到最新版」，装好后重启 DSH",
     pluginLatest: "接入插件 {{version}} 已是最新",
+    desktopNewer: "DSH 有企业推荐新版本 {{latest}}（当前 {{version}}）",
+    desktopRecommended: "管理员已推送新版 DSH {{latest}}",
+    desktopReadyFix: "安装包已下载到本地，在右侧企业面板点「打开安装包」完成升级",
+    desktopUpdateFix: "在右侧企业面板或「设置 → dsh-ee」下载新版 DSH 安装包",
     missingPlugins: "缺少必装插件 {{plugins}}",
     missingPluginsFix: "在 DSH 插件页安装，或重启 DSH 让接入插件自动安装",
     pluginsOk: "必装插件都已安装",
@@ -205,6 +209,16 @@ var zh = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: "（{{department}}）",
     headerTitle: "重新登录企业账号",
+    headerUpdateSuffix: " · 有新版 DSH",
+    desktopUpdateTitle: "DSH 版本更新",
+    desktopUpdateVersion: "企业推荐新版 DSH {{version}}",
+    desktopUpdateCurrent: "（当前 {{version}}）",
+    desktopUpdateDownloading: "正在下载安装包… {{percent}}%",
+    desktopUpdateReady: "安装包已下载：{{path}}",
+    desktopUpdateFailed: "下载失败：{{error}}",
+    desktopUpdateDownload: "下载新版 DSH",
+    desktopUpdateOpen: "打开安装包",
+    desktopUpdateHint: "下载并校验 SHA-512 后即可打开安装包覆盖安装，企业登录与插件配置会保留。",
     guideDescription: "查看企业账号、额度、模型与接入状态"
   },
   // turn-writes-view.ts：一轮末尾「已留痕」提示
@@ -396,7 +410,23 @@ var zh = {
     updateFailed: "更新失败：{{error}}",
     savedNotice: "已保存并生效。企业技能、微应用和工具正在按新地址同步；登录无效的话，去侧栏企业面板重新登录。",
     sidebarHint: "左侧栏只列前 3 个应用，其余在「查看更多」里；隐藏后首屏输入框下方和右侧企业面板里照样能打开企业应用。",
-    saving: "正在保存…"
+    saving: "正在保存…",
+    desktopTitle: "DSH 客户端版本",
+    desktopRecommended: "推荐版本 {{version}}",
+    desktopUpToDate: "当前版本已是最新或暂无推送版本",
+    desktopDownloading: "正在下载… {{percent}}%",
+    desktopDownload: "下载安装包",
+    desktopOpen: "打开安装包",
+    desktopReady: "已下载到 {{path}}",
+    desktopFailed: "下载失败：{{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "当前平台暂无管理员推荐的 DSH 安装包",
+    httpFailed: "下载安装包失败（HTTP {{status}}）",
+    checksumMismatch: "安装包 SHA-512 校验不通过，请重试或联系管理员",
+    notDownloaded: "尚未下载安装包",
+    fileMissing: "本地安装包已被移除，请重新下载",
+    opened: "已打开安装包所在位置：{{path}}"
   },
   // server-settings.ts：dsh-ee 地址的保存与连接测试
   serverSettings: {
@@ -718,6 +748,10 @@ var en = {
     pluginNewer: "A newer version of the connect plugin is available: {{latest}} (current {{version}})",
     updateFix: "Click “Update to latest” under Settings → dsh-ee in DSH, then restart DSH after it installs.",
     pluginLatest: "Connect plugin {{version}} is up to date",
+    desktopNewer: "A newer enterprise-recommended DSH version is available: {{latest}} (current {{version}})",
+    desktopRecommended: "Administrator pushed DSH {{latest}}",
+    desktopReadyFix: "Installer is downloaded locally. Click “Open installer” in the enterprise panel to upgrade.",
+    desktopUpdateFix: "Download the new DSH installer from the enterprise panel or Settings → dsh-ee.",
     missingPlugins: "Missing required plugins: {{plugins}}",
     missingPluginsFix: "Install them on the DSH plugins page, or restart DSH so the connect plugin installs them automatically.",
     pluginsOk: "All required plugins are installed",
@@ -771,6 +805,16 @@ var en = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "Sign in to the enterprise account again",
+    headerUpdateSuffix: " · DSH update",
+    desktopUpdateTitle: "DSH Update",
+    desktopUpdateVersion: "Enterprise recommends DSH {{version}}",
+    desktopUpdateCurrent: " (current {{version}})",
+    desktopUpdateDownloading: "Downloading installer… {{percent}}%",
+    desktopUpdateReady: "Installer downloaded: {{path}}",
+    desktopUpdateFailed: "Download failed: {{error}}",
+    desktopUpdateDownload: "Download DSH",
+    desktopUpdateOpen: "Open installer",
+    desktopUpdateHint: "Downloaded installers are SHA-512 verified; your sign-in and plugin settings are preserved after upgrading.",
     guideDescription: "View the enterprise account, quota, models and connection status"
   },
   // turn-writes-view.ts：一轮末尾「已留痕」提示
@@ -962,7 +1006,23 @@ var en = {
     updateFailed: "Update failed: {{error}}",
     savedNotice: "Saved and applied. Enterprise skills, micro-apps and tools are syncing to the new address; if the sign-in is no longer valid, sign in again from the sidebar enterprise panel.",
     sidebarHint: "The sidebar lists only the first 3 apps; the rest are under View more. When hidden, enterprise apps can still be opened below the composer on the home screen and from the enterprise panel on the right.",
-    saving: "Saving…"
+    saving: "Saving…",
+    desktopTitle: "DSH Desktop version",
+    desktopRecommended: "Recommended {{version}}",
+    desktopUpToDate: "Up to date or no pushed release for this platform",
+    desktopDownloading: "Downloading… {{percent}}%",
+    desktopDownload: "Download installer",
+    desktopOpen: "Open installer",
+    desktopReady: "Downloaded to {{path}}",
+    desktopFailed: "Download failed: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "No recommended DSH installer is available for this platform",
+    httpFailed: "Installer download failed (HTTP {{status}})",
+    checksumMismatch: "Installer SHA-512 verification failed; please retry or contact your administrator",
+    notDownloaded: "Installer has not been downloaded yet",
+    fileMissing: "Local installer file was removed; please download again",
+    opened: "Opened installer location: {{path}}"
   },
   // server-settings.ts：dsh-ee 地址的保存与连接测试
   serverSettings: {
@@ -1284,6 +1344,10 @@ var es = {
     pluginNewer: "Hay una versión más reciente del plugin de conexión: {{latest}} (actual {{version}})",
     updateFix: "Haz clic en “Actualizar a la última versión” en «Ajustes → dsh-ee» de DSH y reinicia DSH cuando termine la instalación.",
     pluginLatest: "El plugin de conexión {{version}} está actualizado",
+    desktopNewer: "Hay una versión empresarial recomendada de DSH: {{latest}} (actual {{version}})",
+    desktopRecommended: "El administrador publicó DSH {{latest}}",
+    desktopReadyFix: "El instalador ya está descargado. Haz clic en «Abrir instalador» en el panel de empresa para actualizar.",
+    desktopUpdateFix: "Descarga el nuevo instalador de DSH desde el panel de empresa o Ajustes → dsh-ee.",
     missingPlugins: "Faltan plugins obligatorios: {{plugins}}",
     missingPluginsFix: "Instálalos en la página de plugins de DSH o reinicia DSH para que el plugin de conexión los instale automáticamente.",
     pluginsOk: "Todos los plugins obligatorios están instalados",
@@ -1337,6 +1401,16 @@ var es = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "Volver a iniciar sesión en la cuenta de empresa",
+    headerUpdateSuffix: " · Nuevo DSH",
+    desktopUpdateTitle: "Actualización de DSH",
+    desktopUpdateVersion: "La empresa recomienda DSH {{version}}",
+    desktopUpdateCurrent: " (actual {{version}})",
+    desktopUpdateDownloading: "Descargando instalador… {{percent}}%",
+    desktopUpdateReady: "Instalador descargado: {{path}}",
+    desktopUpdateFailed: "Error al descargar: {{error}}",
+    desktopUpdateDownload: "Descargar DSH",
+    desktopUpdateOpen: "Abrir instalador",
+    desktopUpdateHint: "El instalador se verifica con SHA-512; tu sesión y plugins se conservan tras actualizar.",
     guideDescription: "Ver la cuenta de empresa, la cuota, los modelos y el estado de la conexión"
   },
   // turn-writes-view.ts：一轮末尾「已留痕」提示
@@ -1528,7 +1602,23 @@ var es = {
     updateFailed: "La actualización falló: {{error}}",
     savedNotice: "Guardado y aplicado. Las habilidades, microaplicaciones y herramientas de empresa se están sincronizando con la nueva dirección; si la sesión ya no es válida, vuelve a iniciarla desde el panel de empresa de la barra lateral.",
     sidebarHint: "La barra lateral solo muestra las 3 primeras aplicaciones; el resto está en “Ver más”. Si las ocultas, las aplicaciones de empresa se pueden abrir igualmente debajo del cuadro de texto de la pantalla de inicio y desde el panel de empresa de la derecha.",
-    saving: "Guardando…"
+    saving: "Guardando…",
+    desktopTitle: "Versión de DSH Desktop",
+    desktopRecommended: "Recomendada {{version}}",
+    desktopUpToDate: "Actualizado o sin versión publicada para esta plataforma",
+    desktopDownloading: "Descargando… {{percent}}%",
+    desktopDownload: "Descargar instalador",
+    desktopOpen: "Abrir instalador",
+    desktopReady: "Descargado en {{path}}",
+    desktopFailed: "Error al descargar: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "No hay un instalador de DSH recomendado para esta plataforma",
+    httpFailed: "Error al descargar el instalador (HTTP {{status}})",
+    checksumMismatch: "Falló la verificación SHA-512 del instalador; inténtalo de nuevo o contacta con el administrador",
+    notDownloaded: "El instalador aún no se ha descargado",
+    fileMissing: "El archivo del instalador local fue eliminado; descárgalo de nuevo",
+    opened: "Ubicación del instalador abierta: {{path}}"
   },
   // server-settings.ts：dsh-ee 地址的保存与连接测试
   serverSettings: {
@@ -1850,6 +1940,10 @@ var pt = {
     pluginNewer: "Há uma nova versão do plugin de conexão: {{latest}} (atual {{version}})",
     updateFix: "Em Configurações → dsh-ee no DSH, clique em “Atualizar para a versão mais recente” e reinicie o DSH depois de instalar.",
     pluginLatest: "O plugin de conexão {{version}} está atualizado",
+    desktopNewer: "Há uma nova versão recomendada do DSH pela empresa: {{latest}} (atual {{version}})",
+    desktopRecommended: "O administrador enviou o DSH {{latest}}",
+    desktopReadyFix: "O instalador foi baixado localmente. Clique em «Abrir instalador» no painel da empresa para atualizar.",
+    desktopUpdateFix: "Baixe o novo instalador do DSH no painel da empresa ou em Configurações → dsh-ee.",
     missingPlugins: "Plugins obrigatórios ausentes: {{plugins}}",
     missingPluginsFix: "Instale-os na página de plugins do DSH, ou reinicie o DSH para que o plugin de conexão os instale automaticamente.",
     pluginsOk: "Todos os plugins obrigatórios estão instalados",
@@ -1903,6 +1997,16 @@ var pt = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "Entrar novamente na conta da empresa",
+    headerUpdateSuffix: " · Novo DSH",
+    desktopUpdateTitle: "Atualização do DSH",
+    desktopUpdateVersion: "A empresa recomenda DSH {{version}}",
+    desktopUpdateCurrent: " (atual {{version}})",
+    desktopUpdateDownloading: "Baixando instalador… {{percent}}%",
+    desktopUpdateReady: "Instalador baixado: {{path}}",
+    desktopUpdateFailed: "Falha ao baixar: {{error}}",
+    desktopUpdateDownload: "Baixar DSH",
+    desktopUpdateOpen: "Abrir instalador",
+    desktopUpdateHint: "O instalador é verificado por SHA-512; sua sessão e plugins são mantidos após a atualização.",
     guideDescription: "Ver a conta da empresa, a cota, os modelos e o status da conexão"
   },
   // turn-writes-view.ts: aviso de “registrado” no fim da rodada
@@ -2094,7 +2198,23 @@ var pt = {
     updateFailed: "Falha na atualização: {{error}}",
     savedNotice: "Salvo e aplicado. As skills, os microapps e as ferramentas da empresa estão sendo sincronizados com o novo endereço; se o login não for mais válido, entre novamente pelo painel da empresa na barra lateral.",
     sidebarHint: "A barra lateral lista apenas os 3 primeiros aplicativos; os demais ficam em “Ver mais”. Quando ocultos, os aplicativos da empresa ainda podem ser abertos abaixo do campo de entrada na tela inicial e no painel da empresa à direita.",
-    saving: "Salvando…"
+    saving: "Salvando…",
+    desktopTitle: "Versão do DSH Desktop",
+    desktopRecommended: "Recomendada {{version}}",
+    desktopUpToDate: "Atualizado ou sem versão enviada para esta plataforma",
+    desktopDownloading: "Baixando… {{percent}}%",
+    desktopDownload: "Baixar instalador",
+    desktopOpen: "Abrir instalador",
+    desktopReady: "Baixado em {{path}}",
+    desktopFailed: "Falha ao baixar: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "Nenhum instalador recomendado do DSH está disponível para esta plataforma",
+    httpFailed: "Falha ao baixar o instalador (HTTP {{status}})",
+    checksumMismatch: "Falha na verificação SHA-512 do instalador; tente novamente ou contate o administrador",
+    notDownloaded: "O instalador ainda não foi baixado",
+    fileMissing: "O arquivo local do instalador foi removido; baixe novamente",
+    opened: "Local do instalador aberto: {{path}}"
   },
   // server-settings.ts: salvamento e teste de conexão do endereço dsh-ee
   serverSettings: {
@@ -2416,6 +2536,10 @@ var hi = {
     pluginNewer: "कनेक्ट प्लगइन का नया संस्करण उपलब्ध है {{latest}} (वर्तमान {{version}})",
     updateFix: "DSH में “सेटिंग्स → dsh-ee” के अंतर्गत “नवीनतम में अपडेट करें” पर क्लिक करें, इंस्टॉल होने पर DSH पुनः आरंभ करें",
     pluginLatest: "कनेक्ट प्लगइन {{version}} नवीनतम है",
+    desktopNewer: "एंटरप्राइज़ द्वारा अनुशंसित नया DSH संस्करण उपलब्ध है: {{latest}} (वर्तमान {{version}})",
+    desktopRecommended: "प्रशासक ने DSH {{latest}} पुश किया है",
+    desktopReadyFix: "इंस्टॉलर डाउनलोड हो चुका है। अपग्रेड करने के लिए एंटरप्राइज़ पैनल में “इंस्टॉलर खोलें” पर क्लिक करें।",
+    desktopUpdateFix: "एंटरप्राइज़ पैनल या सेटिंग्स → dsh-ee से नया DSH इंस्टॉलर डाउनलोड करें।",
     missingPlugins: "आवश्यक प्लगइन गायब हैं: {{plugins}}",
     missingPluginsFix: "DSH के प्लगइन पृष्ठ पर इंस्टॉल करें, या DSH पुनः आरंभ करें ताकि कनेक्ट प्लगइन उन्हें अपने आप इंस्टॉल कर दे",
     pluginsOk: "सभी आवश्यक प्लगइन इंस्टॉल हैं",
@@ -2469,6 +2593,16 @@ var hi = {
     headerTitleUser: "{{username}}{{department}}",
     headerDepartment: " ({{department}})",
     headerTitle: "एंटरप्राइज़ खाते में फिर से साइन इन करें",
+    headerUpdateSuffix: " · नया DSH",
+    desktopUpdateTitle: "DSH अपडेट",
+    desktopUpdateVersion: "एंटरप्राइज़ DSH {{version}} की अनुशंसा करता है",
+    desktopUpdateCurrent: " (वर्तमान {{version}})",
+    desktopUpdateDownloading: "इंस्टॉलर डाउनलोड हो रहा है… {{percent}}%",
+    desktopUpdateReady: "इंस्टॉलर डाउनलोड हुआ: {{path}}",
+    desktopUpdateFailed: "डाउनलोड विफल: {{error}}",
+    desktopUpdateDownload: "DSH डाउनलोड करें",
+    desktopUpdateOpen: "इंस्टॉलर खोलें",
+    desktopUpdateHint: "इंस्टॉलर SHA-512 से सत्यापित होता है; अपग्रेड के बाद आपका साइन-इन और प्लगइन सुरक्षित रहते हैं।",
     guideDescription: "एंटरप्राइज़ खाता, कोटा, मॉडल और कनेक्शन स्थिति देखें"
   },
   // turn-writes-view.ts: the "logged in dsh-ee" notice at the end of a turn
@@ -2660,7 +2794,23 @@ var hi = {
     updateFailed: "अपडेट विफल: {{error}}",
     savedNotice: "सहेजा और लागू कर दिया गया। एंटरप्राइज़ स्किल, माइक्रो-ऐप्स और टूल नए पते पर सिंक हो रहे हैं; साइन इन अमान्य हो तो साइडबार के एंटरप्राइज़ पैनल से फिर से साइन इन करें।",
     sidebarHint: "साइडबार में केवल पहले 3 ऐप्स दिखाई देते हैं, बाकी “और देखें” में हैं; छिपाने के बाद भी होम स्क्रीन पर इनपुट बॉक्स के नीचे और दाईं ओर के एंटरप्राइज़ पैनल से एंटरप्राइज़ ऐप्स खोले जा सकते हैं।",
-    saving: "सहेजा जा रहा है…"
+    saving: "सहेजा जा रहा है…",
+    desktopTitle: "DSH Desktop संस्करण",
+    desktopRecommended: "अनुशंसित {{version}}",
+    desktopUpToDate: "नवीनतम है या इस प्लेटफ़ॉर्म के लिए कोई पुश संस्करण नहीं है",
+    desktopDownloading: "डाउनलोड हो रहा है… {{percent}}%",
+    desktopDownload: "इंस्टॉलर डाउनलोड करें",
+    desktopOpen: "इंस्टॉलर खोलें",
+    desktopReady: "डाउनलोड हुआ: {{path}}",
+    desktopFailed: "डाउनलोड विफल: {{error}}"
+  },
+  desktopUpdate: {
+    noRelease: "इस प्लेटफ़ॉर्म के लिए कोई अनुशंसित DSH इंस्टॉलर उपलब्ध नहीं है",
+    httpFailed: "इंस्टॉलर डाउनलोड विफल (HTTP {{status}})",
+    checksumMismatch: "इंस्टॉलर का SHA-512 सत्यापन विफल रहा; कृपया पुनः प्रयास करें या प्रशासक से संपर्क करें",
+    notDownloaded: "इंस्टॉलर अभी तक डाउनलोड नहीं हुआ है",
+    fileMissing: "स्थानीय इंस्टॉलर फ़ाइल हटा दी गई है; कृपया पुनः डाउनलोड करें",
+    opened: "इंस्टॉलर स्थान खोला गया: {{path}}"
   },
   // server-settings.ts: saving the dsh-ee address and testing the connection
   serverSettings: {
@@ -23193,6 +23343,39 @@ function enterprisePanel(createElement7, org, state, actions, AppsPanel) {
         createElement7("dd", { key: `${label}-value`, style: { margin: 0 } }, value)
       ])
     ));
+    const du = data.desktop_update;
+    const avail = du?.available;
+    if (du?.updateAvailable && avail) {
+      const pct = du.total > 0 ? Math.min(100, Math.round(du.downloaded / du.total * 100)) : 0;
+      const updateNodes = [
+        createElement7(
+          "div",
+          { style: { fontWeight: 500, lineHeight: 1.5 } },
+          t("statusView.desktopUpdateVersion", { version: avail.version }) + (du.currentVersion ? t("statusView.desktopUpdateCurrent", { version: du.currentVersion }) : "")
+        )
+      ];
+      if (du.note) {
+        updateNodes.push(createElement7("div", { style: { marginTop: 4, opacity: 0.85, lineHeight: 1.5 } }, du.note));
+      }
+      if (du.downloadState === "downloading") {
+        updateNodes.push(createElement7("div", { style: { marginTop: 6, fontSize: 12, opacity: 0.75 } }, t("statusView.desktopUpdateDownloading", { percent: pct })));
+      } else if (du.downloadState === "ready" && du.localPath) {
+        updateNodes.push(createElement7("div", { style: { marginTop: 6, fontSize: 12, color: "#16a34a", overflowWrap: "anywhere" } }, t("statusView.desktopUpdateReady", { path: du.localPath })));
+      } else if (du.downloadState === "error" && du.error) {
+        updateNodes.push(createElement7("div", { style: { marginTop: 6, fontSize: 12, color: "#d92d20", overflowWrap: "anywhere" } }, t("statusView.desktopUpdateFailed", { error: du.error })));
+      }
+      const btnRow = [];
+      if (du.downloadState === "ready" && actions.openDesktopUpdate) {
+        btnRow.push(button(createElement7, t("statusView.desktopUpdateOpen"), actions.openDesktopUpdate, busy));
+      } else if (actions.downloadDesktopUpdate) {
+        btnRow.push(button(createElement7, du.downloadState === "downloading" ? t("statusView.desktopUpdateDownloading", { percent: pct }) : t("statusView.desktopUpdateDownload"), actions.downloadDesktopUpdate, busy || du.downloadState === "downloading"));
+      }
+      if (btnRow.length) {
+        updateNodes.push(createElement7("div", { style: { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } }, ...btnRow));
+      }
+      updateNodes.push(createElement7("div", { style: { marginTop: 6, fontSize: 12, opacity: 0.65, lineHeight: 1.5 } }, t("statusView.desktopUpdateHint")));
+      children.push(section(createElement7, t("statusView.desktopUpdateTitle"), ...updateNodes));
+    }
     if (AppsPanel) children.push(createElement7(AppsPanel, { key: "apps" }));
     children.push(section(
       createElement7,
@@ -23250,7 +23433,8 @@ function enterprisePanel(createElement7, org, state, actions, AppsPanel) {
 function enterpriseHeader(createElement7, data, failed, onClick) {
   const me = data?.me;
   const quota = effectiveQuota(data?.usage);
-  const label = !me ? failed ? t("statusView.headerDisconnected") : t("statusView.headerChecking") : me.admin_live ? t("statusView.headerAdmin", { remaining: adminRemaining(me) }) : quota ? t("statusView.headerQuota", { percent: quota.remainingPercent }) : t("statusView.headerUser", { username: me.username });
+  const baseLabel = !me ? failed ? t("statusView.headerDisconnected") : t("statusView.headerChecking") : me.admin_live ? t("statusView.headerAdmin", { remaining: adminRemaining(me) }) : quota ? t("statusView.headerQuota", { percent: quota.remainingPercent }) : t("statusView.headerUser", { username: me.username });
+  const label = me && data?.desktop_update?.updateAvailable ? baseLabel + t("statusView.headerUpdateSuffix") : baseLabel;
   return createElement7("button", {
     type: "button",
     onClick,
@@ -26453,6 +26637,29 @@ function serverSettingsView(createElement7, state, actions) {
     state.update ? createElement7("p", { "data-dsh-ee-update": state.update.ok ? "ok" : "fail", style: { margin: "8px 0 0", fontSize: 12, lineHeight: 1.6, color: state.update.ok ? "inherit" : "#d92d20" } }, state.update.message) : null,
     createElement7("p", { style: { margin: "6px 0 0", fontSize: 12, lineHeight: 1.6, ...muted2 } }, t("settingsView.updateHint"))
   ));
+  if (state.desktopUpdate) {
+    const du = state.desktopUpdate;
+    const pct = du.total > 0 ? Math.min(100, Math.round(du.downloaded / du.total * 100)) : 0;
+    children.push(createElement7(
+      "div",
+      { key: "desktop", "data-dsh-ee-settings": "desktop-update", style: { marginTop: 20, paddingTop: 16, borderTop: "1px solid color-mix(in srgb, currentColor 14%, transparent)" } },
+      createElement7(
+        "div",
+        { style: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" } },
+        createElement7("span", { style: { fontWeight: 500 } }, t("settingsView.desktopTitle")),
+        createElement7(
+          "span",
+          { style: { fontSize: 12, ...muted2 } },
+          du.updateAvailable && du.available ? t("settingsView.desktopRecommended", { version: du.available.version }) : t("settingsView.desktopUpToDate")
+        ),
+        du.updateAvailable && du.available ? du.downloadState === "ready" && actions.openDesktop ? button3(createElement7, t("settingsView.desktopOpen"), actions.openDesktop, !!busy, true) : actions.downloadDesktop ? button3(createElement7, busy === "desktop" || du.downloadState === "downloading" ? t("settingsView.desktopDownloading", { percent: pct }) : t("settingsView.desktopDownload"), actions.downloadDesktop, !!busy || du.downloadState === "downloading", true) : null : null
+      ),
+      du.note ? createElement7("p", { style: { margin: "6px 0 0", fontSize: 12, lineHeight: 1.6 } }, du.note) : null,
+      du.downloadState === "ready" && du.localPath ? createElement7("p", { style: { margin: "6px 0 0", fontSize: 12, color: "#16a34a", overflowWrap: "anywhere" } }, t("settingsView.desktopReady", { path: du.localPath })) : null,
+      du.downloadState === "error" && du.error ? createElement7("p", { style: { margin: "6px 0 0", fontSize: 12, color: "#d92d20", overflowWrap: "anywhere" } }, t("settingsView.desktopFailed", { error: du.error })) : null,
+      state.desktopMessage ? createElement7("p", { style: { margin: "6px 0 0", fontSize: 12, lineHeight: 1.6 } }, state.desktopMessage) : null
+    ));
+  }
   children.push(createElement7(
     "p",
     { key: "hint", style: { marginTop: 22, fontSize: 12, lineHeight: 1.6, ...muted2 } },
@@ -26484,6 +26691,12 @@ function registerServerSettings(ctx, deps) {
         try {
           const settings = unwrapRemote2(await remote.serverSettings());
           patch({ settings, draft: settings.base });
+          if (remote.desktopUpdate) {
+            try {
+              patch({ desktopUpdate: unwrapRemote2(await remote.desktopUpdate()) });
+            } catch {
+            }
+          }
         } catch (error62) {
           patch({ error: t("settingsView.readFailed", { error: message(error62) }) });
         }
@@ -26521,6 +26734,25 @@ function registerServerSettings(ctx, deps) {
         patch({ busy: void 0 });
       }
     };
+    const downloadDesktop = async () => {
+      patch({ busy: "desktop", desktopMessage: void 0 });
+      try {
+        const du = unwrapRemote2(await remote.downloadDesktopUpdate());
+        patch({ desktopUpdate: du });
+      } catch (error62) {
+        patch({ desktopMessage: t("settingsView.desktopFailed", { error: message(error62) }) });
+      } finally {
+        patch({ busy: void 0 });
+      }
+    };
+    const openDesktop = async () => {
+      try {
+        const res = unwrapRemote2(await remote.openDesktopUpdate());
+        if (res?.message) patch({ desktopMessage: res.message });
+      } catch (error62) {
+        patch({ desktopMessage: message(error62) });
+      }
+    };
     const [mode, setMode] = useState7(readSidebarMode());
     useEffect6(() => subscribeSidebarMode(() => setMode(readSidebarMode())), []);
     return createElement7(
@@ -26531,7 +26763,9 @@ function registerServerSettings(ctx, deps) {
         test: () => void test(),
         save: () => void save(state.draft),
         reset: () => void save(null),
-        update: () => void update()
+        update: () => void update(),
+        downloadDesktop: () => void downloadDesktop(),
+        openDesktop: () => void openDesktop()
       }),
       sidebarAppsToggle(createElement7, mode, (shown) => setSidebarMode(shown ? "shown" : "hidden"))
     );
@@ -26976,6 +27210,9 @@ var clientRemote = createTypertRemoteInfo({
     "dshEE/testServer": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
     "dshEE/saveServer": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
     "dshEE/updatePlugin": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
+    "dshEE/desktopUpdate": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
+    "dshEE/downloadDesktopUpdate": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
+    "dshEE/openDesktopUpdate": { service: "dshEE", parameters: [], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
     "dshEE/webLink": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
     "dshEE/insertFormRow": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
     "dshEE/writeTableRow": { service: "dshEE", parameters: [jsonParameter("request")], result: { mode: "strict", typeSymbol: "unknown", create: () => external_exports.any() }, invocation: { kind: "direct" } },
@@ -27147,7 +27384,32 @@ async function apply(ctx) {
         setDoctor(void 0);
         void state.refresh();
       };
-      return enterprisePanel(import_react6.createElement, org, { ...state, notice, doctor }, { login: () => void login(), refresh, doctor: () => void diagnose() }, AppsPanel);
+      const downloadDesktopUpdate = async () => {
+        state.setBusy(true);
+        try {
+          unwrapRemote(await remote.downloadDesktopUpdate());
+          await state.refresh();
+        } catch (err) {
+          setNotice(err instanceof Error ? err.message : String(err));
+        } finally {
+          state.setBusy(false);
+        }
+      };
+      const openDesktopUpdate = async () => {
+        try {
+          const res = unwrapRemote(await remote.openDesktopUpdate());
+          if (res?.message) setNotice(res.message);
+        } catch (err) {
+          setNotice(err instanceof Error ? err.message : String(err));
+        }
+      };
+      return enterprisePanel(import_react6.createElement, org, { ...state, notice, doctor }, {
+        login: () => void login(),
+        refresh,
+        doctor: () => void diagnose(),
+        downloadDesktopUpdate: () => void downloadDesktopUpdate(),
+        openDesktopUpdate: () => void openDesktopUpdate()
+      }, AppsPanel);
     };
     const EnterpriseHeader = () => {
       const state = useOverview(remote);

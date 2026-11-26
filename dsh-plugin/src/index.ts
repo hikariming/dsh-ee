@@ -22,6 +22,7 @@ import { createLocalMcp, registerLocalMcpCommand } from "./local-mcp.js";
 import type { DshContext, PluginConfig } from "./dsh.js";
 import { initI18n, t } from "./i18n/index.js";
 import { DependencyMirrors } from "./mirrors.js";
+import { DesktopUpdateManager } from "./desktop-update.js";
 
 export const name = "dsh-ee-connect";
 export const inject = {
@@ -42,6 +43,7 @@ export function apply(ctx: DshContext, input: Partial<PluginConfig>): void {
   ctx.effect(() => () => mirrors.dispose());
   const tokens = new TokenManager(ctx, config);
   const http = new HttpClient(tokens);
+  const desktopUpdate = new DesktopUpdateManager(config, http);
   const bridge = new McpBridge(ctx, config, http);
   const localMcp = createLocalMcp(ctx, config);
   const writes = new WriteLog();
@@ -76,8 +78,8 @@ export function apply(ctx: DshContext, input: Partial<PluginConfig>): void {
     const appBindings = new AppBindings();
     const boards = new BoardStore();
     const checklists = new ChecklistStore();
-    registerDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors);
-    const skillsReady = registerSkills(ctx, config, http, mirrors).then((loaded) => {
+    registerDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors, desktopUpdate);
+    const skillsReady = registerSkills(ctx, config, http, mirrors, desktopUpdate).then((loaded) => {
       refreshSkills = loaded.refreshNow;
       return (skills = loaded);
     });
@@ -138,13 +140,16 @@ export function apply(ctx: DshContext, input: Partial<PluginConfig>): void {
         base: config.base,
         writes: writes.between(String(request?.sessionId ?? ""), Number(request?.from), request?.to == null ? undefined : Number(request.to)),
       }),
-      readOverview: () => readEnterpriseOverview(config, http, bridge).catch((error) => ({ failure: overviewFailure(config, error) })),
+      readOverview: () => readEnterpriseOverview(config, http, bridge, desktopUpdate).catch((error) => ({ failure: overviewFailure(config, error) })),
       login: () => commands.login(),
-      doctor: () => runLocalDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors),
+      doctor: () => runLocalDoctor(ctx, config, tokens, http, bridge, appBindings, mirrors, desktopUpdate),
       serverSettings: async () => server.read(),
       testServer: (request) => server.test(request?.base),
       saveServer: (request) => server.save(request?.base),
       updatePlugin: () => updateConnect(ctx, config, http),
+      desktopUpdate: async () => desktopUpdate.status(),
+      downloadDesktopUpdate: () => desktopUpdate.download(),
+      openDesktopUpdate: () => desktopUpdate.openInstaller(),
       webLink: (request) => exchangeWebLink(config.base, http, String(request?.url ?? "")),
     });
     const disposeWorkbenchTool = registerWorkbenchTool(ctx, {

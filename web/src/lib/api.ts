@@ -2,7 +2,7 @@
 import i18n from "../i18n";
 import { resolveApiErrorText } from "./api-error-i18n";
 import { formatDateTime, formatNumber } from "./format";
-import type { DshClient, DshRelease, Plugin, PluginKind, PluginStatus, Settings } from "./types";
+import type { DshClient, DshFleetResponse, DshPushMode, DshRelease, Plugin, PluginKind, PluginStatus, Settings } from "./types";
 
 export interface RoleRef {
   id: number;
@@ -2233,12 +2233,14 @@ export const api = {
   putWelcome: (dismissed: boolean) => request<{ dismissed: boolean }>("PUT", "/api/me/welcome", { dismissed }),
   getStarted: (admin: boolean) => request<GetStarted>("POST", "/api/me/get-started", { admin }),
   getStartedStatus: (code: string) => request<GetStartedStatus>("GET", `/api/me/get-started/${encodeURIComponent(code)}`),
-  dshReleases: () => request<{ enabled: boolean; releases: DshRelease[] }>("GET", "/api/dsh/releases"),
+  dshReleases: () => request<{ enabled: boolean; push_mode?: DshPushMode; push_note?: string; releases: DshRelease[] }>("GET", "/api/dsh/releases"),
   adminDshReleases: () => request<{ releases: DshRelease[] }>("GET", "/api/admin/dsh-releases").then((r) => r.releases),
   checkDshReleases: () => request<{ ok: boolean }>("POST", "/api/admin/dsh-releases/check"),
   mirrorDshRelease: (id: number) => request<{ ok: boolean }>("POST", `/api/admin/dsh-releases/${id}/mirror`),
   recommendDshRelease: (id: number) => request<{ ok: boolean }>("POST", `/api/admin/dsh-releases/${id}/recommend`),
   deleteDshRelease: (id: number) => request<void>("DELETE", `/api/admin/dsh-releases/${id}`),
+  updateDshReleasePush: (body: { push_mode: DshPushMode; push_note: string }) => request<{ ok: boolean; push_mode: DshPushMode; push_note: string }>("PUT", "/api/admin/dsh-releases/push", body),
+  adminDshReleaseClients: () => request<DshFleetResponse>("GET", "/api/admin/dsh-releases/clients"),
   dshClients: () => request<{ clients: DshClient[] }>("GET", "/api/me/dsh-clients").then((r) => r.clients),
   uploadBrandLogo: (file: File) => {
     const form = new FormData();
