@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -135,6 +136,32 @@ func TestDshInstallerPreservesPrerelease(t *testing.T) {
 		} else if err != nil || got != tc.want {
 			t.Errorf("%s: got %q, %v; want %q", tc.name, got, err, tc.want)
 		}
+	}
+}
+
+func TestDshInstallerFilesSortByVersion(t *testing.T) {
+	dir := t.TempDir()
+	want := []string{
+		"dsh-0.2.9-win-x64.exe",
+		"dsh-0.2.10-rc.2-win-x64.exe",
+		"dsh-0.2.10-rc.10-win-x64.exe",
+		"a-dsh-0.2.10-mac-arm64.dmg",
+		"b-dsh-0.2.10-mac-arm64.zip",
+		"z-dsh-0.2.10-win-x64.exe",
+		"dsh-latest-win-x64.exe",
+	}
+	for _, name := range want {
+		writeDshInstaller(t, dir, name)
+	}
+	files, err := dshInstallerFiles(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, file := range files {
+		files[i] = filepath.Base(file)
+	}
+	if !slices.Equal(files, want) {
+		t.Fatalf("got upload order %q, want %q", files, want)
 	}
 }
 

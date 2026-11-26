@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -126,14 +128,40 @@ func dshInstallerFiles(input string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var files []string
+	type installer struct {
+		name, target string
+		version      *semver.Version
+	}
+	var installers []installer
 	for _, e := range entries {
 		if e.Type().IsRegular() && dshInstallerFamily(e.Name()) != "" {
-			files = append(files, filepath.Join(input, e.Name()))
+			target, version, _ := dshInstallerDetails(e.Name(), "", "")
+			parsedVersion, _ := semver.StrictNewVersion(version)
+			installers = append(installers, installer{e.Name(), target, parsedVersion})
 		}
 	}
-	if len(files) == 0 {
+	if len(installers) == 0 {
 		return nil, errors.New(tr("目录中没有支持的安装包", "directory contains no supported installers"))
+	}
+	slices.SortFunc(installers, func(a, b installer) int {
+		switch {
+		case a.version == nil && b.version != nil:
+			return 1
+		case a.version != nil && b.version == nil:
+			return -1
+		case a.version != nil:
+			if order := a.version.Compare(b.version); order != 0 {
+				return order
+			}
+		}
+		if order := cmp.Compare(a.target, b.target); order != 0 {
+			return order
+		}
+		return cmp.Compare(a.name, b.name)
+	})
+	files := make([]string, len(installers))
+	for i, item := range installers {
+		files[i] = filepath.Join(input, item.name)
 	}
 	return files, nil
 }
