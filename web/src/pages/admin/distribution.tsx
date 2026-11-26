@@ -272,15 +272,15 @@ export default function AdminDistribution() {
                   </td>
                   <td className="px-5 py-3 text-neutral-700">
                     <div>{c.client_name || "DSH"}</div>
-                    {c.plugin_version && <div className="font-mono text-xs text-neutral-400">{c.plugin_version}</div>}
+                    {c.last_client && <div className="font-mono text-xs text-neutral-400">{c.last_client}</div>}
                   </td>
                   <td className="px-5 py-3 font-mono text-xs text-neutral-700">
                     {c.host_kind === "desktop" ? (
                       <>
-                        <div>{c.desktop_version || "—"}</div>
+                        <div>{c.version || "—"}</div>
                         {c.target && <div className="text-neutral-400">{c.target}</div>}
                       </>
-                    ) : c.host || "—"}
+                    ) : c.last_host || "—"}
                   </td>
                   <td className="px-5 py-3 font-mono text-xs text-neutral-600">{c.recommended_version || "—"}</td>
                   <td className="px-5 py-3">

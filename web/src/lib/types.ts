@@ -59,10 +59,10 @@ export interface DshFleetClient {
   username: string;
   department: string;
   client_name: string;
-  plugin_version: string;
-  host: string;
+  last_client: string;
+  last_host: string;
   host_kind: "desktop" | "cli" | "unknown";
-  desktop_version: string;
+  version: string;
   target: string;
   recommended_version: string;
   status: "up_to_date" | "outdated" | "unknown";
