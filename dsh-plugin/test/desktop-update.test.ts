@@ -289,6 +289,36 @@ test("DesktopUpdateManager isolates downloads and does not overwrite existing fi
     assert.notEqual(st.localPath, existingPath);
     assert.equal(await readFile(existingPath, "utf8"), "user-existing-file");
     assert.deepEqual(await readFile(st.localPath!), payload);
+
+    // Simulating restart: a new manager instance reuses the verified file on disk without re-downloading.
+    let secondFetches = 0;
+    const manager2 = new DesktopUpdateManager(
+      { base: "http://127.0.0.1:5188" },
+      { async fetch() { secondFetches++; return new Response(payload, { status: 200 }); } } as any,
+      { platform: "darwin", arch: "arm64", env: { DSH_DESKTOP_VERSION: "0.2.0" }, downloadsDir: dir },
+    );
+    manager2.applyCatalog({
+      mode: "notify",
+      releases: {
+        "mac-arm64": {
+          id: 5,
+          target: "mac-arm64",
+          kind: "dmg",
+          version: "0.3.0",
+          file: "installer.dmg",
+          size: payload.length,
+          sha512: createHash("sha512").update(payload).digest("base64"),
+          verified: true,
+          source: "import",
+          released_at: "2026-11-26T00:00:00Z",
+          download_url: "/dl/mac-arm64/installer.dmg",
+        },
+      },
+    });
+    const st2 = await manager2.download();
+    assert.equal(st2.downloadState, "ready");
+    assert.equal(st2.localPath, st.localPath);
+    assert.equal(secondFetches, 0);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

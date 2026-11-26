@@ -3316,7 +3316,7 @@ var TokenManager = class {
 // src/desktop-update.ts
 import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
-import { createWriteStream } from "node:fs";
+import { createReadStream, createWriteStream } from "node:fs";
 import { mkdir, mkdtemp, rename, rm, stat } from "node:fs/promises";
 import os2 from "node:os";
 import path3 from "node:path";
@@ -3471,6 +3471,22 @@ function safeVersionDir(version) {
   const cleaned = version.trim().replace(/[^a-zA-Z0-9._-]+/g, "_");
   return cleaned && cleaned !== "." && cleaned !== ".." ? cleaned : "latest";
 }
+async function fileMatchesSha512(filePath, expected) {
+  try {
+    const info = await stat(filePath);
+    if (!info.isFile()) return null;
+    const hash = createHash("sha512");
+    await new Promise((resolve, reject) => {
+      const stream = createReadStream(filePath);
+      stream.on("data", (chunk) => hash.update(chunk));
+      stream.on("end", resolve);
+      stream.on("error", reject);
+    });
+    return hash.digest().equals(expected) ? info.size : null;
+  } catch {
+    return null;
+  }
+}
 async function resolveNonOverwritingPath(dir, fileName) {
   const ext = path3.extname(fileName);
   const stem = ext ? fileName.slice(0, -ext.length) : fileName;
@@ -3600,8 +3616,22 @@ var DesktopUpdateManager = class {
     } catch {
       targetDir = await mkdtemp(path3.join(os2.tmpdir(), "dsh-ee-updates-"));
     }
+    const expected = normalizeSha512(rel.sha512);
+    if (expected) {
+      const existingPath = path3.join(targetDir, fileName);
+      const existingSize = await fileMatchesSha512(existingPath, expected);
+      if (existingSize !== null) {
+        this.localPath = existingPath;
+        this.downloadedKey = key;
+        this.downloaded = existingSize;
+        this.total = existingSize;
+        this.downloadState = "ready";
+        this.error = void 0;
+        return this.status();
+      }
+    }
     const finalPath = await resolveNonOverwritingPath(targetDir, fileName);
-    const partPath = path3.join(targetDir, `.${fileName}.${randomUUID()}.part`);
+    const partPath = path3.join(targetDir, `.dsh-${randomUUID()}.part`);
     try {
       const dlPath = `/dl/${encodeURIComponent(rel.target)}/${encodeURIComponent(rel.file)}`;
       const response = await this.http.fetch(dlPath, {}, 0);
@@ -3661,7 +3691,6 @@ var DesktopUpdateManager = class {
         out.destroy();
         throw err;
       }
-      const expected = normalizeSha512(rel.sha512);
       if (expected) {
         const actual = hash.digest();
         if (!actual.equals(expected)) {
